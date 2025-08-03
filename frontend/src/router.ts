@@ -1,18 +1,32 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {
+  createRouter,
+  createWebHistory,
+  type Router,
+  type NavigationGuardNext,
+  type RouteLocationNormalized,
+  type RouteRecordRaw,
+  type RouteLocationGeneric,
+} from 'vue-router'
 import { session } from './data/session'
 import { users } from './data/users'
 import { getScrollContainer, scrollTo } from './utils/scrollContainer'
 import { spaces } from './data/spaces'
 import { until, useLocalStorage } from '@vueuse/core'
 
-let defaultRoute = window.default_route
+declare global {
+  interface Window {
+    default_route?: string
+  }
+}
+
+let defaultRoute = window.default_route || ''
 if (!defaultRoute || defaultRoute?.includes('{{')) {
   defaultRoute = '/home'
 }
 
 const preferredHomePage = useLocalStorage('preferredHomePage', 'Discussions')
 
-let router = createRouter({
+const router: Router = createRouter({
   history: createWebHistory('/g/'),
   routes: [
     {
@@ -228,7 +242,7 @@ let router = createRouter({
                   name: 'ProjectOverview',
                   path: '',
                   component: () => import('@/pages/ProjectOverview.vue'),
-                  redirect: (to) => {
+                  redirect: (to: RouteLocationGeneric) => {
                     return {
                       name: 'Space',
                       params: {
@@ -241,7 +255,7 @@ let router = createRouter({
                   name: 'ProjectDiscussions',
                   path: 'discussions',
                   component: () => import('@/pages/ProjectDiscussions.vue'),
-                  redirect: (to) => {
+                  redirect: (to: RouteLocationGeneric) => {
                     return {
                       name: 'SpaceDiscussions',
                       params: {
@@ -255,7 +269,7 @@ let router = createRouter({
                   path: 'discussion/:postId/:slug?',
                   component: () => import('@/pages/ProjectDiscussion.vue'),
                   props: true,
-                  redirect: (to) => {
+                  redirect: (to: RouteLocationGeneric) => {
                     return {
                       name: 'Discussion',
                       params: {
@@ -276,7 +290,7 @@ let router = createRouter({
                   path: 'tasks',
                   component: () => import('@/pages/ProjectTasks.vue'),
                   props: true,
-                  redirect: (to) => {
+                  redirect: (to: RouteLocationGeneric) => {
                     return {
                       name: 'SpaceTasks',
                       params: {
@@ -291,7 +305,7 @@ let router = createRouter({
                   component: () => import('@/pages/ProjectTaskDetail.vue'),
                   props: true,
                   meta: { fullWidth: true },
-                  redirect: (to) => {
+                  redirect: (to: RouteLocationGeneric) => {
                     return {
                       name: 'SpaceTask',
                       params: {
@@ -305,7 +319,7 @@ let router = createRouter({
                   name: 'ProjectPages',
                   path: 'pages',
                   component: () => import('@/pages/ProjectPages.vue'),
-                  redirect: (to) => {
+                  redirect: (to: RouteLocationGeneric) => {
                     return {
                       name: 'SpacePages',
                       params: {
@@ -320,7 +334,7 @@ let router = createRouter({
                   component: () => import('@/pages/Page.vue'),
                   props: true,
                   meta: { fullWidth: true, hideHeader: true },
-                  redirect: (to) => {
+                  redirect: (to: RouteLocationGeneric) => {
                     return {
                       name: 'SpacePage',
                       params: {
@@ -337,12 +351,15 @@ let router = createRouter({
         },
       ],
     },
-  ],
+  ] as RouteRecordRaw[],
 })
 
-let scrollPositions = {}
-function saveAndRestoreScrollPosition(to, from) {
-  let scrollContainer = getScrollContainer()
+const scrollPositions: Record<string, number> = {}
+function saveAndRestoreScrollPosition(
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized,
+): void {
+  const scrollContainer = getScrollContainer()
   if (scrollContainer) {
     scrollPositions[from.path] = scrollContainer.scrollTop
   }
