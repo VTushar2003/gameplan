@@ -1,20 +1,5 @@
 <template>
-  <Breadcrumbs
-    class="space-breadcrumbs"
-    :items="[
-      {
-        label: category?.title || 'Spaces',
-        route: { name: 'Spaces', query: category ? { teamId: category.name } : undefined },
-      },
-      {
-        label: space?.title,
-        prefix: h('span', { class: 'grid place-items-center font-[emoji] text-lg' }, space?.icon),
-        suffix: space?.is_private ? LucideLock : null,
-        route: { name: 'Space', params: { spaceId } },
-      },
-      ...(items || []),
-    ]"
-  >
+  <Breadcrumbs :items="breadcrumbs">
     <template #prefix="{ item }">
       <component :is="item.prefix" v-if="item.prefix" class="mr-1.5 size-4 text-ink-gray-6" />
     </template>
@@ -25,26 +10,58 @@
 </template>
 
 <script setup lang="ts">
-import { h } from 'vue'
-import { Breadcrumbs } from 'frappe-ui'
+import { type Component, computed, h } from 'vue'
+import { Breadcrumbs, BreadcrumbsProps } from 'frappe-ui'
 import { useSpace } from '@/data/spaces'
 import LucideLock from '~icons/lucide/lock'
-import { RouteComponent } from 'vue-router'
 import { useTeam } from '@/data/teams'
+import { useRoute } from 'vue-router'
 
 const props = defineProps<{
   spaceId: string
-  items?: {
-    label: string
-    route?: RouteComponent
-    suffix?: any
-    prefix?: any
-    onClick?: () => void
-  }[]
+  items?: BreadcrumbsProps['items'] & {
+    suffix?: Component
+    prefix?: Component
+  }
 }>()
 
+const route = useRoute()
 const space = useSpace(() => props.spaceId)
-const category = useTeam(() => space.value?.team)
+
+const breadcrumbs = computed(() => {
+  let items: BreadcrumbsProps['items'] = [
+    {
+      label: 'Home',
+      route: { name: 'Home' },
+    },
+  ]
+
+  if (space.value) {
+    items.push({
+      label: space.value.title || space.value.name || '',
+      prefix: h(
+        'span',
+        { class: 'grid place-items-center font-[emoji] text-lg' },
+        space.value.icon,
+      ),
+      suffix: space.value.is_private ? LucideLock : null,
+      route: { name: 'Space', params: { spaceId: props.spaceId } },
+    })
+
+    if (route.name === 'SpaceCustomize') {
+      items.push({
+        label: 'Customize',
+        route: { name: 'SpaceCustomize', params: { spaceId: props.spaceId } },
+      })
+    }
+  }
+
+  if (props.items) {
+    items.push(...props.items)
+  }
+
+  return items
+})
 </script>
 
 <style>

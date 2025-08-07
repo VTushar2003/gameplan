@@ -89,6 +89,8 @@ export interface GPPage extends DocType {
   team?: string
   /** Project Tool: Link (GP Project Tool) */
   project_tool?: string
+  /** Project Tool Title: Data */
+  project_tool_title?: string
 }
 
 // Last updated: 2022-12-09 12:53:23.011368

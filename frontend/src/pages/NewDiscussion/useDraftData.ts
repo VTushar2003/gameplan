@@ -17,6 +17,7 @@ export function useDraftData() {
       title: '',
       content: '',
       project: null as string | null,
+      project_tool: null as string | null,
     },
     { deep: true },
   )
@@ -40,6 +41,7 @@ export function useDraftData() {
     draftData.value.title = doc.title || ''
     draftData.value.content = doc.content || ''
     draftData.value.project = doc.project ? doc.project.toString() : null
+    draftData.value.project_tool = doc.project_tool ? doc.project_tool.toString() : null
   }
 
   const errorMessage = ref<string | null>(null)
@@ -76,6 +78,7 @@ export function useDraftData() {
 
   function resetValues() {
     draftData.value.project = null
+    draftData.value.project_tool = null
     draftData.value.title = ''
     draftData.value.content = ''
     localStorage.removeItem(getStorageKey())
@@ -86,6 +89,7 @@ export function useDraftData() {
       draftData.value.title = ''
       draftData.value.content = ''
       draftData.value.project = (currentRoute.query.spaceId as string) || null
+      draftData.value.project_tool = (currentRoute.query.podId as string) || null
     }
   }
 

@@ -22,36 +22,10 @@
             <div class="overflow-hidden text-ellipsis whitespace-nowrap">
               <div
                 class="prose prose-sm pointer-events-none w-[200%] origin-top-left scale-[.55] prose-p:my-1 md:w-[250%] md:scale-[.39]"
-                v-html="d.content"
-              />
-            </div>
-          </div>
-          <div class="mt-3 flex justify-between items-center">
-            <div class="flex-grow w-full min-w-0">
-              <h1 class="text-base truncate font-semibold text-ink-gray-7">
-                {{ d.title }}
-              </h1>
-              <div
-                class="mt-1.5 text-sm flex gap-1 text-ink-gray-6"
-                v-if="d.project"
-                :set="(space = getSpace(d))"
               >
-                <div>
-                  {{ space?.icon }}
-                </div>
-                <div>{{ space?.title }}</div>
+                <h1 class="text-3xl font-semibold text-ink-gray-8">{{ d.title }}</h1>
+                <div v-html="d.content"></div>
               </div>
-            </div>
-            <div class="shrink-0 ml-1 invisible group-hover:visible">
-              <Dropdown
-                :button="{
-                  icon: 'more-horizontal',
-                  label: 'Page Options',
-                  variant: 'ghost',
-                }"
-                :options="getDropdownOptions(d)"
-                placement="right"
-              />
             </div>
           </div>
         </section>

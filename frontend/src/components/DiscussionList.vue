@@ -50,6 +50,7 @@ import EmptyStateBox from './EmptyStateBox.vue'
 interface Props {
   filters: UseDiscussionOptions['filters']
   orderBy?: UseDiscussionOptions['orderBy']
+  limit?: UseDiscussionOptions['limit']
   cacheKey?: string
   showPinned?: boolean
 }
@@ -62,6 +63,7 @@ const discussions = useDiscussions({
   filters: props.filters,
   orderBy: props.orderBy,
   cacheKey: props.cacheKey,
+  limit: props.limit,
 })
 
 const pinnedDiscussions = useDiscussions({

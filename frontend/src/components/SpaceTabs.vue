@@ -27,7 +27,7 @@ const currentTab = computed({
     let currentPage = currentRoute.name?.toString() || 'SpaceDiscussions'
     return {
       SpaceDiscussions: 'discussions',
-      SpacePages: 'pages',
+      SpaceDocuments: 'pages',
       SpaceTasks: 'tasks',
     }[currentPage]
   },
@@ -35,7 +35,7 @@ const currentTab = computed({
     if (!value) return
     let routeName = {
       discussions: 'SpaceDiscussions',
-      pages: 'SpacePages',
+      pages: 'SpaceDocuments',
       tasks: 'SpaceTasks',
     }[value]
     router.push({ name: routeName, params: { spaceId: props.spaceId } })

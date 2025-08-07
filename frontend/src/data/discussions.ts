@@ -44,6 +44,7 @@ export function useDiscussion(discussionId: MaybeRefOrGetter<string>) {
     last_unread_poll: string
     is_bookmarked: boolean
     views: number
+    project_tool_title?: string
   }
 
   interface DiscussionMethods {

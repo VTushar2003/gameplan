@@ -1,7 +1,7 @@
 <template>
   <div class="mt-5 mx-auto max-w-4xl px-2 sm:px-5">
     <div class="mb-4 px-3 flex items-center justify-between">
-      <SpaceTabs :spaceId="spaceId" />
+      <h1 class="text-xl font-semibold text-ink-gray-8">{{ pod.doc?.title }}</h1>
       <div class="flex items-stretch space-x-2">
         <Button variant="solid" @click="openNewTaskDialog">
           <template #prefix>
@@ -20,24 +20,33 @@
 <script setup lang="ts">
 import { useTemplateRef } from 'vue'
 import { useUser } from '@/data/users'
-import SpaceTabs from '@/components/SpaceTabs.vue'
 import TaskList from '@/components/TaskList.vue'
 import { showNewTaskDialog } from '@/components/NewTaskDialog'
+import { useDoc } from 'frappe-ui'
+import { GPProjectTool } from '@/types/doctypes'
 
 const props = defineProps<{
   spaceId: string
+  podId: string
 }>()
 
 const taskList = useTemplateRef<typeof TaskList>('taskList')
 
 const filters = () => ({
   project: props.spaceId,
+  project_tool: props.podId,
+})
+
+const pod = useDoc<GPProjectTool>({
+  doctype: 'GP Project Tool',
+  name: () => props.podId,
 })
 
 function openNewTaskDialog() {
   showNewTaskDialog({
     defaults: {
       project: props.spaceId,
+      project_tool: props.podId,
       assigned_to: useUser('sessionUser').name,
     },
     onSuccess: () => {

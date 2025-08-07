@@ -75,7 +75,7 @@
         <router-link
           v-else-if="pod.type === 'Documents'"
           class="flex h-[18.5rem]"
-          :to="{ name: 'SpacePages', params: { spaceId: spaceId, podId: pod.name } }"
+          :to="{ name: 'SpaceDocuments', params: { spaceId: spaceId, podId: pod.name } }"
         >
           <PodDocuments :spaceId="spaceId" :pod />
         </router-link>

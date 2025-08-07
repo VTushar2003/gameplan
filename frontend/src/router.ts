@@ -138,11 +138,12 @@ const router: Router = createRouter({
           props: true,
         },
         {
-          name: 'SpacePages',
-          path: 'pages/:podId?',
-          component: () => import('@/pages/SpacePages.vue'),
+          name: 'SpaceDocuments',
+          path: 'documents/:podId?',
+          component: () => import('@/pages/SpaceDocuments.vue'),
           props: true,
         },
+        // TODO: redirect the old page url pages/:pageId/:slug? to page/:pageId/:slug?
         {
           name: 'SpacePage',
           path: 'page/:pageId/:slug?',
@@ -333,7 +334,7 @@ const router: Router = createRouter({
                   component: () => import('@/pages/ProjectPages.vue'),
                   redirect: (to: RouteLocationGeneric) => {
                     return {
-                      name: 'SpacePages',
+                      name: 'SpaceDocuments',
                       params: {
                         spaceId: to.params.projectId,
                       },

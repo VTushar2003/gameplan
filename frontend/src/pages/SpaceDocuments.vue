@@ -1,7 +1,7 @@
 <template>
   <div class="mt-5 mx-auto max-w-4xl px-2 sm:px-5">
     <div class="flex px-3 mb-4 items-center justify-between">
-      <SpaceTabs :spaceId="spaceId" />
+      <h1 class="text-xl font-semibold text-ink-gray-8">{{ pod.doc?.title }}</h1>
       <div class="flex items-center space-x-2">
         <Dropdown
           :options="[
@@ -43,7 +43,10 @@
     </div>
     <PageGrid
       class="grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 lg:grid-cols-4 px-3"
-      :listOptions="{ filters: { project: spaceId }, orderBy: () => orderBy }"
+      :listOptions="{
+        filters: { project: spaceId, project_tool: podId ? podId : undefined },
+        orderBy: () => orderBy,
+      }"
     />
   </div>
 </template>
@@ -51,15 +54,15 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Dropdown } from 'frappe-ui'
-import { useNewDoc } from 'frappe-ui/src/data-fetching'
-import SpaceTabs from '@/components/SpaceTabs.vue'
+import { useDoc, useNewDoc } from 'frappe-ui/src/data-fetching'
 import PageGrid from './PageGrid.vue'
 import ArrowDownUp from '~icons/lucide/arrow-up-down'
-import { GPPage } from '@/types/doctypes'
+import { GPPage, GPProjectTool } from '@/types/doctypes'
 import { UseListOptions } from 'frappe-ui/src/data-fetching/useList/types'
 
 const props = defineProps<{
   spaceId: string
+  podId: string
 }>()
 
 const router = useRouter()
@@ -67,8 +70,14 @@ const orderBy: UseListOptions<GPPage>['orderBy'] = ref('modified desc')
 
 const newPage = useNewDoc<GPPage>('GP Page', {
   project: props.spaceId,
+  project_tool: props.podId,
   title: 'Untitled',
   content: '',
+})
+
+const pod = useDoc<GPProjectTool>({
+  doctype: 'GP Project Tool',
+  name: () => props.podId,
 })
 
 function createNewPage() {
