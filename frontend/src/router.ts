@@ -37,10 +37,11 @@ const router: Router = createRouter({
       path: '/home',
       name: 'Home',
       redirect: () => {
-        if (preferredHomePage.value === 'Discussions') {
-          return { name: 'DiscussionsTab', params: { feedType: 'recent' } }
-        }
-        return { name: preferredHomePage.value }
+        // if (preferredHomePage.value === 'Discussions') {
+        //   return { name: 'DiscussionsTab', params: { feedType: 'recent' } }
+        // }
+        // return { name: preferredHomePage.value }
+        return { name: 'MySpaces' }
       },
     },
     {
@@ -54,6 +55,11 @@ const router: Router = createRouter({
       path: '/discussions/:feedType',
       component: () => import('@/pages/Discussions.vue'),
       props: true,
+    },
+    {
+      name: 'MySpaces',
+      path: '/spaces',
+      component: () => import('@/pages/MySpaces/MySpaces.vue'),
     },
     {
       name: 'MyTasks',
@@ -108,7 +114,7 @@ const router: Router = createRouter({
       component: () => import('@/pages/Teams.vue'),
     },
     {
-      path: '/spaces',
+      path: '/space-list',
       name: 'Spaces',
       component: () => import('@/pages/SpaceList.vue'),
     },

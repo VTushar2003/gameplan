@@ -17,6 +17,7 @@ import EditSpaceDialog from './EditSpaceDialog.vue'
 import ManageMembersDialog from './ManageMembersDialog.vue'
 import { createDialog } from '@/utils/dialogs'
 import { unreadCount, useSpace } from '@/data/spaces'
+import { usePinnedSpaces } from '@/data/pinnedSpaces'
 import { GPProject } from '@/types/doctypes'
 
 import LucideUserPlus from '~icons/lucide/user-plus'
@@ -27,6 +28,8 @@ import LucideTrash2 from '~icons/lucide/trash-2'
 import LucideLogOut from '~icons/lucide/log-out'
 import LucideCheck from '~icons/lucide/check'
 import LucideLayoutPanelTop from '~icons/lucide/layout-panel-top'
+import LucidePin from '~icons/lucide/pin'
+import LucidePinOff from '~icons/lucide/pin-off'
 
 defineOptions({
   inheritAttrs: false,
@@ -39,6 +42,7 @@ const props = defineProps<{
 const router = useRouter()
 const space = useSpace(() => props.spaceId)
 const spaces = useDoctype<GPProject>('GP Project')
+const { isPinned, pinSpace, unpinSpace } = usePinnedSpaces()
 
 const showSpaceMergeDialog = ref(false)
 const showSpaceCategoryDialog = ref(false)
@@ -46,6 +50,18 @@ const showSpaceEditDialog = ref(false)
 const inviteGuestDialog = ref(false)
 
 const options = computed(() => [
+  {
+    label: isPinned(props.spaceId) ? 'Unpin space' : 'Pin space',
+    icon: isPinned(props.spaceId) ? LucidePinOff : LucidePin,
+    onClick: async () => {
+      if (isPinned(props.spaceId)) {
+        await unpinSpace(props.spaceId)
+      } else {
+        await pinSpace(props.spaceId)
+      }
+    },
+    condition: () => !space.value?.archived_at,
+  },
   {
     label: 'Edit settings',
     icon: LucideEdit,

@@ -382,3 +382,15 @@ export interface GPProjectTool extends DocType {
   /** Enabled: Check */
   enabled: 0 | 1
 }
+
+// Last updated: 2023-01-31 15:15:16.167656
+export interface GPPinnedProject extends DocType {
+  /** Project: Link (GP Project) */
+  project: string
+  /** Team: Link (GP Team) */
+  team?: string
+  /** User: Link (User) */
+  user: string
+  /** Order: Int */
+  order?: number
+}
