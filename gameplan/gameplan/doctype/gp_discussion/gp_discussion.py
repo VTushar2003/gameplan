@@ -29,7 +29,7 @@ class GPDiscussion(HasActivity, HasMentions, HasReactions, HasTags, Document):
 
 	# Lifecycle Methods
 	def as_dict(self, *args, **kwargs):
-		d = super(__class__, self).as_dict(*args, **kwargs)
+		d = super().as_dict(*args, **kwargs)
 		last_visit = frappe.db.get_value(
 			"GP Discussion Visit", {"discussion": self.name, "user": frappe.session.user}, "last_visit"
 		)
@@ -59,6 +59,9 @@ class GPDiscussion(HasActivity, HasMentions, HasReactions, HasTags, Document):
 		d.last_unread_poll = polls[0] if polls else None
 		d.is_bookmarked = self.is_bookmarked()
 		d.views = frappe.db.count("GP Discussion Visit", {"discussion": self.name})
+		d.project_tool_title = (
+			frappe.db.get_value("GP Project Tool", self.project_tool, "title") if self.project_tool else None
+		)
 		return d
 
 	def before_insert(self):

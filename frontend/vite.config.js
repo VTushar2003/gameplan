@@ -33,6 +33,7 @@ export default defineConfig({
             'gp_search_feedback',
             'gp_draft',
             'gp_tag',
+            'gp_project_tool',
           ],
         },
       },

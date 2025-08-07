@@ -13,7 +13,7 @@ interface ChildDocType extends DocType {
   idx?: number
 }
 
-// Last updated: 2023-06-15 21:01:42.058336
+// Last updated: 2025-08-06 16:57:19.088051
 export interface GPTask extends DocType {
   /** Title: Data */
   title: string
@@ -43,6 +43,8 @@ export interface GPTask extends DocType {
   completed_by?: string
   /** Comments Count: Int */
   comments_count?: number
+  /** Project Tool: Link (GP Project Tool) */
+  project_tool?: string
 }
 
 // Last updated: 2023-01-16 13:19:48.202430
@@ -71,7 +73,7 @@ export interface GPUserProfile extends DocType {
   enabled: 0 | 1
 }
 
-// Last updated: 2024-02-06 12:18:02.871772
+// Last updated: 2025-08-06 16:58:02.566873
 export interface GPPage extends DocType {
   /** Title: Data */
   title?: string
@@ -85,6 +87,8 @@ export interface GPPage extends DocType {
   user?: string
   /** Team: Link (GP Team) */
   team?: string
+  /** Project Tool: Link (GP Project Tool) */
+  project_tool?: string
 }
 
 // Last updated: 2022-12-09 12:53:23.011368
@@ -117,7 +121,7 @@ export interface GPNotification extends DocType {
   team?: string
 }
 
-// Last updated: 2025-05-22 13:12:36.398541
+// Last updated: 2025-08-06 16:56:45.864175
 export interface GPDiscussion extends DocType {
   /** Project: Link (GP Project) */
   project: string
@@ -155,6 +159,8 @@ export interface GPDiscussion extends DocType {
   last_post?: string
   /** Tags: Table (GP Tag Link) */
   tags: GPTagLink[]
+  /** Project Tool: Link (GP Project Tool) */
+  project_tool?: string
 }
 
 // Last updated: 2023-02-13 21:00:23.191195
@@ -211,11 +217,11 @@ export interface GPInvitation extends DocType {
   role: '' | 'Gameplan Admin' | 'Gameplan Member' | 'Gameplan Guest'
 }
 
-// Last updated: 2024-12-15 00:46:16.394764
+// Last updated: 2025-08-06 00:56:45.623126
 export interface GPProject extends DocType {
   /** Title: Data */
   title: string
-  /** Description: Text Editor */
+  /** Description: Small Text */
   description?: string
   /** Team: Link (GP Team) */
   team?: string
@@ -237,6 +243,10 @@ export interface GPProject extends DocType {
   is_private: 0 | 1
   /** Is Followed: Check */
   is_followed: 0 | 1
+  /** Cover Image: Attach Image */
+  cover_image?: string
+  /** Cover Image Position: Float */
+  cover_image_position?: number
 }
 
 // Last updated: 2022-08-11 18:36:55.799372
@@ -327,7 +337,7 @@ export interface GPSearchFeedback extends DocType {
   query?: string
 }
 
-// Last updated: 2025-03-08 16:00:25.825860
+// Last updated: 2025-08-06 17:47:21.422799
 export interface GPDraft extends DocType {
   /** Title: Data */
   title?: string
@@ -339,6 +349,8 @@ export interface GPDraft extends DocType {
   project?: string
   /** Team: Link (GP Team) */
   team?: string
+  /** Project Tool: Link (GP Project Tool) */
+  project_tool?: string
 }
 
 // Last updated: 2025-05-22 13:12:57.407226
@@ -353,4 +365,18 @@ export interface GPTagLink extends ChildDocType {
 export interface GPTag extends DocType {
   /** Label: Data */
   label?: string
+}
+
+// Last updated: 2025-08-06 14:16:33.267088
+export interface GPProjectTool extends DocType {
+  /** Project: Link (GP Project) */
+  project: string
+  /** Type: Select */
+  type: 'Discussions' | 'Documents' | 'Tasks'
+  /** Title: Data */
+  title: string
+  /** Index: Int */
+  idx: number
+  /** Enabled: Check */
+  enabled: 0 | 1
 }

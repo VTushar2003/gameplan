@@ -17,6 +17,7 @@
   "completed_by",
   "idx",
   "project",
+  "project_tool",
   "team",
   "assigned_to",
   "comments_count"
@@ -105,12 +106,19 @@
    "fieldname": "comments_count",
    "fieldtype": "Int",
    "label": "Comments Count"
+  },
+  {
+   "fieldname": "project_tool",
+   "fieldtype": "Link",
+   "label": "Project Tool",
+   "options": "GP Project Tool"
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-15 21:01:42.058336",
- "modified_by": "Administrator",
+ "modified": "2025-08-06 16:57:19.088051",
+ "modified_by": "faris@erpnext.com",
  "module": "Gameplan",
  "name": "GP Task",
  "naming_rule": "Autoincrement",
@@ -164,6 +172,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
