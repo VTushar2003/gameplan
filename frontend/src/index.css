@@ -8,3 +8,13 @@
 body {
   -webkit-tap-highlight-color: transparent;
 }
+
+html, body {
+    color: var(--ink-gray-9);
+}
+
+/* global focus style */
+:focus-visible {
+  outline: 3px solid var(--outline-gray-3);
+  outline-offset: 0;
+}
