@@ -9,6 +9,7 @@ export interface Space
     GPProject,
     | 'name'
     | 'title'
+    | 'description'
     | 'icon'
     | 'team'
     | 'archived_at'
@@ -16,6 +17,8 @@ export interface Space
     | 'modified'
     | 'tasks_count'
     | 'discussions_count'
+    | 'cover_image'
+    | 'cover_image_position'
   > {
   members: Member[]
 }
@@ -25,6 +28,7 @@ export let spaces = useList<Space>({
   fields: [
     'name',
     'title',
+    'description',
     'icon',
     'team',
     'archived_at',
@@ -32,6 +36,8 @@ export let spaces = useList<Space>({
     'modified',
     'tasks_count',
     'discussions_count',
+    'cover_image',
+    'cover_image_position',
     { members: ['user'] },
   ],
   initialData: [],

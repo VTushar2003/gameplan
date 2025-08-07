@@ -2,7 +2,7 @@
   <Dialog :options="{ title: 'Edit Space' }" v-model="show">
     <template #body-content>
       <div class="mt-3 space-y-2" v-if="space">
-        <div class="space-x-2 flex items-center w-full">
+        <div class="space-x-2 flex items-start w-full">
           <IconPicker v-model="space.icon" v-slot="{ isOpen }">
             <Button>
               <template #icon>
@@ -21,7 +21,8 @@
 
         <div class="flex items-center space-x-2">
           <div class="w-7 h-7"></div>
-          <div>
+          <div class="flex-1 space-y-2">
+            <Textarea v-model="space.description" placeholder="Description" />
             <FormControl
               type="checkbox"
               :label="
@@ -47,7 +48,7 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import { Dialog, ErrorMessage, FormControl, TextInput } from 'frappe-ui'
+import { Dialog, ErrorMessage, FormControl, TextInput, Textarea } from 'frappe-ui'
 import IconPicker from './IconPicker.vue'
 import { useSpace } from '@/data/spaces'
 import { useDoctype } from 'frappe-ui/src/data-fetching'
@@ -65,6 +66,7 @@ function submit() {
     .submit({
       name: props.spaceId,
       title: space.value?.title,
+      description: space.value?.description,
       icon: space.value?.icon,
     })
     .then(() => {

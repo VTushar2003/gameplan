@@ -8,7 +8,8 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useDoctype } from 'frappe-ui/src/data-fetching'
+import { useRouter } from 'vue-router'
+import { useDoctype } from 'frappe-ui'
 import DropdownMoreOptions from './DropdownMoreOptions.vue'
 import MergeSpaceDialog from './MergeSpaceDialog.vue'
 import ChangeSpaceCategoryDialog from './ChangeSpaceCategoryDialog.vue'
@@ -25,6 +26,7 @@ import LucideArchive from '~icons/lucide/archive'
 import LucideTrash2 from '~icons/lucide/trash-2'
 import LucideLogOut from '~icons/lucide/log-out'
 import LucideCheck from '~icons/lucide/check'
+import LucideLayoutPanelTop from '~icons/lucide/layout-panel-top'
 
 defineOptions({
   inheritAttrs: false,
@@ -34,6 +36,7 @@ const props = defineProps<{
   spaceId: string
 }>()
 
+const router = useRouter()
 const space = useSpace(() => props.spaceId)
 const spaces = useDoctype<GPProject>('GP Project')
 
@@ -44,9 +47,20 @@ const inviteGuestDialog = ref(false)
 
 const options = computed(() => [
   {
-    label: 'Edit',
+    label: 'Edit settings',
     icon: LucideEdit,
     onClick: () => (showSpaceEditDialog.value = true),
+    condition: () => !space.value?.archived_at,
+  },
+  {
+    label: 'Customize space',
+    icon: LucideLayoutPanelTop,
+    onClick: () => {
+      router.push({
+        name: 'SpaceCustomize',
+        params: { spaceId: props.spaceId },
+      })
+    },
     condition: () => !space.value?.archived_at,
   },
   {
