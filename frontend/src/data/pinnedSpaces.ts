@@ -1,15 +1,10 @@
-import { computed, MaybeRefOrGetter, toValue } from 'vue'
-import { useList } from 'frappe-ui/src/data-fetching'
+import { useBulkUpdate, useList } from 'frappe-ui/src/data-fetching'
 import { GPPinnedProject } from '@/types/doctypes'
-import { useUser } from '@/data/users'
 
 export function usePinnedSpaces() {
-  const sessionUser = useUser('sessionUser')
-
   const pinnedSpaces = useList<GPPinnedProject>({
     doctype: 'GP Pinned Project',
     fields: ['name', 'project', 'user', 'order'],
-    filters: () => ({ user: sessionUser.name }),
     orderBy: 'order asc',
     cacheKey: 'pinnedSpaces',
     immediate: true,
@@ -18,7 +13,6 @@ export function usePinnedSpaces() {
   const pinSpace = (spaceId: string) => {
     return pinnedSpaces.insert.submit({
       project: spaceId,
-      user: sessionUser.name,
       order: (pinnedSpaces.data?.length || 0) + 1,
     })
   }
@@ -31,34 +25,32 @@ export function usePinnedSpaces() {
     return Promise.resolve()
   }
 
-  const reorderSpaces = (orderedSpaceIds: string[]) => {
-    const updatePromises = orderedSpaceIds
-      .map((spaceId, index) => {
-        const pinnedSpace = pinnedSpaces.data?.find((p) => p.project === spaceId)
-        if (pinnedSpace) {
-          return pinnedSpaces.setValue.submit({
-            name: pinnedSpace.name,
-            order: index + 1,
-          })
-        }
-        return Promise.resolve()
-      })
-      .filter(Boolean)
-
-    return Promise.all(updatePromises)
-  }
-
   const isPinned = (spaceId: string) => {
     return pinnedSpaces.data?.some((p) => p.project === spaceId) || false
   }
 
-  const pinnedSpaceIds = computed(() => {
-    return pinnedSpaces.data?.map((p) => p.project) || []
-  })
+  type UpdatedPinnedSpace = Pick<GPPinnedProject, 'name' | 'order'>
+
+  const _reorderSpaces = useBulkUpdate()
+  const reorderSpaces = (updatedPinnedSpaces: UpdatedPinnedSpace[]) => {
+    // optimistic update
+    for (let pinnedSpace of updatedPinnedSpaces) {
+      pinnedSpaces.updateRow({
+        name: pinnedSpace.name,
+        order: pinnedSpace.order,
+      })
+    }
+
+    let docs = updatedPinnedSpaces.map((pinnedSpace) => ({
+      ...pinnedSpace,
+      doctype: 'GP Pinned Project',
+    }))
+
+    return _reorderSpaces.submit(docs)
+  }
 
   return {
     pinnedSpaces,
-    pinnedSpaceIds,
     pinSpace,
     unpinSpace,
     reorderSpaces,

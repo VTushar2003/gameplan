@@ -14,7 +14,7 @@ class GPPinnedProject(Document):
 			frappe.throw("This project is already pinned")
 
 	@staticmethod
-	def get_list_query(query):
+	def get_list(query):
 		Pin = frappe.qb.DocType("GP Pinned Project")
 		query = query.where(Pin.user == frappe.session.user)
 		return query
