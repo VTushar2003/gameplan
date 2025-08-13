@@ -1,5 +1,8 @@
 <template>
-  <DropdownMoreOptions v-bind="$attrs" :options="options" />
+  <DropdownMoreOptions
+    v-bind="$attrs"
+    :options="validOptions.length ? validOptions : emptyOptions"
+  />
 
   <MergeSpaceDialog v-model="showSpaceMergeDialog" :spaceId="props.spaceId" />
   <ChangeSpaceCategoryDialog v-model="showSpaceCategoryDialog" :spaceId="props.spaceId" />
@@ -51,13 +54,13 @@ const inviteGuestDialog = ref(false)
 
 const options = computed(() => [
   {
-    label: isPinned(props.spaceId) ? 'Unpin space' : 'Pin space',
+    label: isPinned(props.spaceId) ? 'Remove from My Spaces' : 'Add to My Spaces',
     icon: isPinned(props.spaceId) ? LucidePinOff : LucidePin,
     onClick: async () => {
       if (isPinned(props.spaceId)) {
-        await unpinSpace(props.spaceId)
+        return unpinSpace(props.spaceId)
       } else {
-        await pinSpace(props.spaceId)
+        return pinSpace(props.spaceId)
       }
     },
     condition: () => !space.value?.archived_at,
@@ -114,16 +117,17 @@ const options = computed(() => [
     onClick: () => (inviteGuestDialog.value = true),
     condition: () => !space.value?.archived_at,
   },
-  {
-    label: 'Change Category',
-    icon: LucideLogOut,
-    onClick: () => (showSpaceCategoryDialog.value = true),
-    condition: () => !space.value?.archived_at,
-  },
+  //   {
+  //     label: 'Change Category',
+  //     icon: LucideLogOut,
+  //     onClick: () => (showSpaceCategoryDialog.value = true),
+  //     condition: () => !space.value?.archived_at,
+  //   },
   {
     label: 'Merge',
     icon: LucideMerge,
     onClick: () => (showSpaceMergeDialog.value = true),
+    condition: () => !space.value?.archived_at,
   },
   {
     label: 'Archive',
@@ -179,4 +183,13 @@ const options = computed(() => [
     condition: () => !space.value?.archived_at,
   },
 ])
+
+const emptyOptions = [
+  {
+    label: 'No actions',
+    disabled: true,
+  },
+]
+
+const validOptions = computed(() => options.value.filter((option) => option.condition()))
 </script>
