@@ -48,6 +48,13 @@ const breadcrumbs = computed(() => {
       route: { name: 'Space', params: { spaceId: props.spaceId } },
     })
 
+    if (route.name == 'SpaceOverview') {
+      items.push({
+        label: 'Overview',
+        route: { name: 'SpaceOverview', params: { spaceId: props.spaceId } },
+      })
+    }
+
     if (route.name === 'SpaceCustomize') {
       items.push({
         label: 'Customize',
