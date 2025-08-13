@@ -79,6 +79,15 @@
         >
           <PodDocuments :spaceId="spaceId" :pod />
         </router-link>
+
+        <!-- Chat Pods -->
+        <router-link
+          v-else-if="pod.type === 'Chats'"
+          class="flex h-[18.5rem]"
+          :to="{ name: 'SpaceChats', params: { spaceId: spaceId, podId: pod.name } }"
+        >
+          <PodChats :spaceId="spaceId" :pod />
+        </router-link>
       </template>
 
       <!-- Fallback message when no pods are enabled -->
@@ -105,6 +114,7 @@ import PodDiscussions from './PodDiscussions.vue'
 import PodTasks from './PodTasks.vue'
 import PodDocuments from './PodDocuments.vue'
 import SpaceOptions from '@/components/SpaceOptions.vue'
+import PodChats from './PodChats.vue'
 
 const props = defineProps<{
   spaceId: string

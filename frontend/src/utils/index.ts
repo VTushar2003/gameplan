@@ -80,3 +80,13 @@ export function relativeTimestamp(timestamp: string): string {
   }
   return dayjsLocal(timestamp).format('D MMM YYYY')
 }
+
+export function shortTimestamp(timestamp: string): string {
+  if (dayjsLocal().diff(timestamp, 'day') < 1) {
+    return dayjsLocal(timestamp).format('h:mm a')
+  }
+  if (dayjsLocal().diff(timestamp, 'year') < 1) {
+    return dayjsLocal(timestamp).format('D MMM')
+  }
+  return dayjsLocal(timestamp).format('D MMM YYYY')
+}

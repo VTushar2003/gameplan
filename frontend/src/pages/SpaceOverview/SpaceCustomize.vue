@@ -230,6 +230,7 @@ const podTypeOptions: Array<{ label: string; value: GPProjectTool['type'] }> = [
   { label: 'Discussions', value: 'Discussions' },
   { label: 'Tasks', value: 'Tasks' },
   { label: 'Documents', value: 'Documents' },
+  { label: 'Chats', value: 'Chats' },
 ]
 
 // Pod icon mapping
@@ -238,6 +239,7 @@ const getPodIcon = (type: string) => {
     Discussions: LucideMessageSquare,
     Tasks: LucideCheckSquare,
     Documents: LucideFileText,
+    Chats: LucideMessageCircle,
   }
   return iconMap[type as keyof typeof iconMap] || 'file-text'
 }
@@ -248,6 +250,7 @@ const getPodSummary = (type: string) => {
     Discussions: 'Share ideas, ask questions, and collaborate with your team',
     Tasks: 'Create, assign, and track progress on tasks and projects',
     Documents: 'Store, organize, and collaborate on documents and files',
+    Chats: 'Real-time messaging and instant communication with your team',
   }
   return summaryMap[type as keyof typeof summaryMap] || 'Enhance your workspace with this pod'
 }

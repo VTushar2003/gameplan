@@ -164,6 +164,12 @@ const router: Router = createRouter({
           props: true,
         },
         {
+          name: 'SpaceChats',
+          path: 'chats/:podId?',
+          component: () => import('@/pages/SpaceChats.vue'),
+          props: true,
+        },
+        {
           name: 'SpaceTask',
           path: 'task/:taskId',
           component: () => import('@/pages/Task.vue'),
