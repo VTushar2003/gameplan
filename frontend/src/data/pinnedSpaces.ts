@@ -1,15 +1,15 @@
 import { useBulkUpdate, useList } from 'frappe-ui/src/data-fetching'
 import { GPPinnedProject } from '@/types/doctypes'
 
-export function usePinnedSpaces() {
-  const pinnedSpaces = useList<GPPinnedProject>({
-    doctype: 'GP Pinned Project',
-    fields: ['name', 'project', 'user', 'order'],
-    orderBy: 'order asc',
-    cacheKey: 'pinnedSpaces',
-    immediate: true,
-  })
+const pinnedSpaces = useList<GPPinnedProject>({
+  doctype: 'GP Pinned Project',
+  fields: ['name', 'project', 'user', 'order'],
+  orderBy: 'order asc',
+  cacheKey: 'pinnedSpaces',
+  immediate: true,
+})
 
+export function usePinnedSpaces() {
   const pinSpace = (spaceId: string) => {
     return pinnedSpaces.insert.submit({
       project: spaceId,
