@@ -8,22 +8,6 @@
     <div class="flex-1">
       <nav class="space-y-0.5 px-2">
         <AppSidebarLink
-          class="group"
-          :to="{ name: 'Home' }"
-          :isActive="testRoute(/Discussions|Spaces/g)"
-        >
-          <template #prefix><LucideNewspaper class="h-4 w-4 text-ink-gray-6" /></template>
-          Home
-          <template #suffix>
-            <button
-              @click.stop.prevent="showHomePageSettingsDialog = true"
-              class="group-hover:opacity-100 opacity-0 transition-opacity flex items-center justify-center p-0.5 hover:bg-surface-gray-1 rounded-sm"
-            >
-              <LucideSettings2 class="h-4 w-4 text-ink-gray-6" />
-            </button>
-          </template>
-        </AppSidebarLink>
-        <AppSidebarLink
           v-for="link in navigation"
           :key="link.name"
           :to="link.route"
@@ -119,7 +103,6 @@
     <NewSpaceDialog v-model="showAddTeamDialog" />
   </ScrollAreaViewport>
   <ScrollBar />
-  <HomePageSettingsDialog v-model="showHomePageSettingsDialog" />
 </template>
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
@@ -133,7 +116,6 @@ import AppLink from './AppLink.vue'
 import UserDropdown from './UserDropdown.vue'
 import { ScrollAreaViewport } from 'reka-ui'
 import ScrollBar from './ScrollBar.vue'
-import HomePageSettingsDialog from './HomePageSettingsDialog.vue'
 
 import ChevronTriangle from './icons/ChevronTriangle.vue'
 import LucideFiles from '~icons/lucide/files'
@@ -141,8 +123,8 @@ import LucideInbox from '~icons/lucide/inbox'
 import LucideListTodo from '~icons/lucide/list-todo'
 import LucideNewspaper from '~icons/lucide/newspaper'
 import LucideUsers2 from '~icons/lucide/users-2'
-import LucideSettings2 from '~icons/lucide/settings-2'
 import LucideSearch from '~icons/lucide/search'
+import LucideHome from '~icons/lucide/home'
 
 const showAddTeamDialog = ref(false)
 const showHomePageSettingsDialog = ref(false)
@@ -165,6 +147,14 @@ let groupedSpaces = computed(() => {
 const navigation = computed(() => {
   return [
     {
+      name: 'Home',
+      icon: LucideHome,
+      route: {
+        name: 'MySpaces',
+      },
+      isActive: testRoute(/MySpaces/g),
+    },
+    {
       name: 'Inbox',
       icon: LucideInbox,
       route: {
@@ -172,6 +162,14 @@ const navigation = computed(() => {
       },
       count: unreadNotifications.data || 0,
       isActive: testRoute(/Notifications/g),
+    },
+    {
+      name: 'Discussions',
+      icon: LucideNewspaper,
+      route: {
+        name: 'Discussions',
+      },
+      isActive: testRoute(/Discussions/g),
     },
     {
       name: 'Tasks',
