@@ -157,6 +157,32 @@ const options = computed(() => [
     condition: () => !space.value?.archived_at,
   },
   {
+    label: 'Unarchive',
+    icon: LucideArchive,
+    onClick: () => {
+      createDialog({
+        title: 'Unarchive space',
+        message: 'This will unarchive the space and restore its functionality.',
+        actions: [
+          {
+            label: 'Unarchive',
+            variant: 'solid',
+            loading: spaces.runDocMethod.loading,
+            onClick: ({ close }) => {
+              spaces.runDocMethod
+                .submit({
+                  method: 'unarchive',
+                  name: props.spaceId,
+                })
+                .then(close)
+            },
+          },
+        ],
+      })
+    },
+    condition: () => space.value?.archived_at,
+  },
+  {
     label: 'Delete',
     icon: LucideTrash2,
     onClick: () => {

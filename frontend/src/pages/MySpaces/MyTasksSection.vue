@@ -5,7 +5,7 @@
       <Button variant="ghost" :route="{ name: 'MyTasks' }"> View all tasks </Button>
     </div>
 
-    <TaskList :listOptions="{ filters, pageLength: 999 }" :groupByStatus="true" />
+    <TaskList :listOptions="{ filters, pageLength: 50 }" :groupByStatus="false" />
   </div>
 </template>
 

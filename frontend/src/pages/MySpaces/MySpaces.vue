@@ -10,8 +10,8 @@
     <div class="mx-auto max-w-4xl px-3 sm:px-5 pb-20">
       <!-- My Spaces Section -->
       <div class="mt-6">
-        <div class="flex items-start justify-between mb-4">
-          <div>
+        <div class="flex items-start justify-between mb-3">
+          <div class="self-center">
             <h2 class="text-xl font-semibold">
               {{ customizeMode ? 'Customize Your Spaces' : 'My Spaces' }}
             </h2>
