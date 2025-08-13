@@ -103,6 +103,76 @@ class GPProject(ManageMembersMixin, Archivable, Document):
 				doc.save()
 
 	@frappe.whitelist()
+	def get_merge_preview(self, project=None):
+		"""Get a preview of what will happen when merging with another project"""
+		if not project or self.name == project:
+			frappe.throw("Invalid project for merge")
+		if isinstance(project, str):
+			project = int(project)
+		if not frappe.db.exists("GP Project", project):
+			frappe.throw(f'Invalid Project "{project}"')
+
+		target_project = frappe.get_doc("GP Project", project)
+		source_project_title = self.title
+
+		# Get pods from both projects
+		source_pods = frappe.get_all(
+			"GP Pod", filters={"project": self.name}, fields=["name", "type", "title", "enabled"]
+		)
+		target_pods = frappe.get_all(
+			"GP Pod", filters={"project": project}, fields=["name", "type", "title", "enabled"]
+		)
+
+		# Calculate new pod titles with prefix
+		pods_to_add = []
+		for pod in source_pods:
+			# Create new title with source project prefix
+			new_title = f"{source_project_title}: {pod.title}"
+
+			# Check for title conflicts and add suffix if needed
+			existing_titles = [p["title"] for p in target_pods] + [p["new_title"] for p in pods_to_add]
+			counter = 2
+			original_new_title = new_title
+			while new_title in existing_titles:
+				new_title = f"{original_new_title} ({counter})"
+				counter += 1
+
+			pods_to_add.append(
+				{
+					"type": pod.type,
+					"original_title": pod.title,
+					"new_title": new_title,
+					"enabled": pod.enabled,
+				}
+			)
+
+		# Get members from both projects
+		source_members = [m.user for m in self.members]
+		target_members = [m.user for m in target_project.members]
+		members_to_add = [user for user in source_members if user not in target_members]
+
+		# Get content counts that will be moved
+		discussions_count = frappe.db.count("GP Discussion", {"project": self.name})
+		tasks_count = frappe.db.count("GP Task", {"project": self.name})
+		pages_count = frappe.db.count("GP Page", {"project": self.name})
+		chat_messages_count = frappe.db.count("GP Chat Message", {"project": self.name})
+
+		return {
+			"source_project": {"name": self.name, "title": self.title},
+			"target_project": {"name": target_project.name, "title": target_project.title},
+			"pods_to_add": pods_to_add,
+			"existing_target_pods": [{"type": p["type"], "title": p["title"]} for p in target_pods],
+			"members_to_add": members_to_add,
+			"content_counts": {
+				"discussions": discussions_count,
+				"tasks": tasks_count,
+				"pages": pages_count,
+				"chat_messages": chat_messages_count,
+				"total": discussions_count + tasks_count + pages_count + chat_messages_count,
+			},
+		}
+
+	@frappe.whitelist()
 	def merge_with_project(self, project=None):
 		if not project or self.name == project:
 			return
@@ -110,6 +180,34 @@ class GPProject(ManageMembersMixin, Archivable, Document):
 			project = int(project)
 		if not frappe.db.exists("GP Project", project):
 			frappe.throw(f'Invalid Project "{project}"')
+
+		# Get merge preview data before starting the merge
+		merge_data = self.get_merge_preview(project)
+		target_project = frappe.get_doc("GP Project", project)
+
+		# Update existing pods instead of creating new ones
+		source_pods = frappe.get_all(
+			"GP Pod", filters={"project": self.name}, fields=["name", "type", "title"]
+		)
+
+		for i, pod_info in enumerate(merge_data["pods_to_add"]):
+			# Find the corresponding source pod
+			source_pod = source_pods[i]
+			pod_doc = frappe.get_doc("GP Pod", source_pod["name"])
+
+			# Update the pod to point to the target project with new title
+			pod_doc.project = project
+			pod_doc.title = pod_info["new_title"]
+			pod_doc.save(ignore_permissions=True)
+
+		# Handle member merging - add missing members to target project
+		for user in merge_data["members_to_add"]:
+			target_project.append("members", {"user": user})
+
+		if merge_data["members_to_add"]:
+			target_project.save(ignore_permissions=True)
+
+		# Now perform the standard rename/merge which will handle all the remaining data migration
 		return self.rename(project, merge=True, validate_rename=False, force=True)
 
 	@frappe.whitelist()

@@ -33,6 +33,11 @@
         <template #prefix>
           <LucideSearch class="size-4 text-ink-gray-5" />
         </template>
+        <template #suffix>
+          <button @click="query = ''" v-if="query">
+            <LucideX class="size-4 text-ink-gray-5" />
+          </button>
+        </template>
       </TextInput>
       <div class="shrink-0">
         <Tooltip text="Filter by space visibility">
@@ -60,6 +65,7 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { useLocalStorage } from '@vueuse/core'
 import { Breadcrumbs, TabButtons, Button, Tooltip, Select, TextInput } from 'frappe-ui'
 import { useDoctype } from 'frappe-ui/src/data-fetching'
 import { spaces as allSpaces, joinedSpaces, Space } from '@/data/spaces'
@@ -71,9 +77,9 @@ import { vFocus } from '@/directives'
 import SpaceCard from './MySpaces/SpaceCard.vue'
 import SpaceListItem from './MySpaces/SpaceListItem.vue'
 
-const currentTab = ref('Public')
-const currentView = ref('Grid')
-const query = ref('')
+const currentTab = useLocalStorage('spaces-filter-tab', 'Public')
+const currentView = useLocalStorage('spaces-view', 'Grid')
+const query = useLocalStorage('spaces-search-query', '')
 const newSpaceDialog = ref(false)
 const searchInput = ref()
 const searchWasFocused = ref(false)

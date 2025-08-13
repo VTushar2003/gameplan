@@ -84,3 +84,15 @@ export function getSpaceUnreadCount(spaceId: string) {
   let spaceIdInt = parseInt(spaceId)
   return unreadCount.data?.[spaceIdInt] ?? 0
 }
+
+export function useSpaceOptions({
+  filterFn = (_p: Space) => true,
+}: { filterFn?: (space: Space) => boolean } = {}) {
+  return computed(() => {
+    return (spaces.data || []).filter(filterFn).map((space) => ({
+      label: space.title + (space.archived_at ? ' (Archived)' : ''),
+      value: space.name,
+      icon: space.icon,
+    }))
+  })
+}
