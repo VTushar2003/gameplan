@@ -22,7 +22,14 @@
       </p>
     </div>
     <div class="mt-3 mb-3 flex px-2.5 items-center justify-between gap-2.5">
-      <TextInput v-model="query" placeholder="Search" class="w-full" v-focus>
+      <TextInput
+        ref="searchInput"
+        v-model="query"
+        :placeholder="`Search ${$platform == 'mac' ? '⌘F' : 'Ctrl+F'}`"
+        class="w-full"
+        @blur="handleSearchBlur"
+        v-focus
+      >
         <template #prefix>
           <LucideSearch class="size-4 text-ink-gray-5" />
         </template>
@@ -52,7 +59,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { Breadcrumbs, TabButtons, Button, Tooltip, Select, TextInput } from 'frappe-ui'
 import { useDoctype } from 'frappe-ui/src/data-fetching'
 import { spaces as allSpaces, joinedSpaces, Space } from '@/data/spaces'
@@ -68,8 +75,42 @@ const currentTab = ref('Public')
 const currentView = ref('Grid')
 const query = ref('')
 const newSpaceDialog = ref(false)
+const searchInput = ref()
+const searchWasFocused = ref(false)
 
 let spaces = useDoctype<GPProject>('GP Project')
+
+// Handle Cmd+F / Ctrl+F keyboard shortcut
+const handleKeydown = (event: KeyboardEvent) => {
+  if ((event.metaKey || event.ctrlKey) && event.key === 'f') {
+    // Check if search input is currently focused
+    const isSearchFocused = document.activeElement === searchInput.value?.el
+
+    if (!isSearchFocused || !searchWasFocused.value) {
+      // First time or search not focused - prevent default and focus search
+      event.preventDefault()
+      event.stopPropagation()
+      searchInput.value?.el?.focus()
+      searchWasFocused.value = true
+    } else {
+      // Search was already focused - allow browser default search
+      searchWasFocused.value = false
+    }
+  }
+}
+
+// Reset the flag when search input loses focus
+const handleSearchBlur = () => {
+  searchWasFocused.value = false
+}
+
+onMounted(() => {
+  document.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeydown)
+})
 
 // Filtered spaces based on current tab and search query
 const filteredSpaces = computed(() => {
