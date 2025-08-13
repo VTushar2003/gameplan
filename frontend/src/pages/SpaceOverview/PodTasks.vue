@@ -2,11 +2,14 @@
   <div
     class="border px-6 pt-6 pb-2.5 rounded-xl bg-surface-white transition-colors hover:bg-surface-gray-1 flex flex-col w-full overflow-hidden"
   >
-    <div class="text-left text-lg font-semibold">{{ pod.title || 'Tasks' }}</div>
+    <div class="flex items-center gap-2">
+      <LucideClipboardList class="size-5 text-ink-gray-6" />
+      <div class="text-left text-lg font-semibold">{{ pod.title || 'Tasks' }}</div>
+    </div>
     <div class="divide-y flex-1 mt-1.5" v-if="tasks.data && tasks.data.length > 0">
       <div class="py-1.5" v-for="task in tasks.data" :key="task.name">
         <div class="flex items-start gap-2">
-          <div class="flex-shrink-0 grid place-items-center h-5">
+          <div class="flex-shrink-0 grid place-items-center h-5 w-5">
             <TaskStatusIcon :status="task.status" />
           </div>
           <div class="flex-1 min-w-0">
@@ -41,13 +44,13 @@
 <script setup lang="ts">
 import TaskStatusIcon from '@/components/NewTaskDialog/TaskStatusIcon.vue'
 import { useList, dayjsLocal } from 'frappe-ui'
-import { GPProjectTool, GPTask } from '@/types/doctypes'
+import { GPPod, GPTask } from '@/types/doctypes'
 import { activeUsers, useUser } from '@/data/users'
 import UserAvatar from '@/components/UserAvatar.vue'
 
 const props = defineProps<{
   spaceId: string
-  pod: GPProjectTool
+  pod: GPPod
 }>()
 
 const tasks = useList<GPTask>({
@@ -55,7 +58,7 @@ const tasks = useList<GPTask>({
   fields: ['name', 'title', 'status', 'assigned_to', 'due_date'],
   filters: {
     project: () => props.spaceId,
-    project_tool: () => props.pod.name,
+    pod: () => props.pod.name,
     status: ['in', ['Backlog', 'Todo', 'In Progress']],
   },
   limit: 7,

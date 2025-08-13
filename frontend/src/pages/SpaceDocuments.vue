@@ -44,7 +44,7 @@
     <PageGrid
       class="grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 lg:grid-cols-4 px-3"
       :listOptions="{
-        filters: { project: spaceId, project_tool: podId ? podId : undefined },
+        filters: { project: spaceId, pod: podId ? podId : undefined },
         orderBy: () => orderBy,
       }"
     />
@@ -57,7 +57,7 @@ import { Dropdown } from 'frappe-ui'
 import { useDoc, useNewDoc } from 'frappe-ui/src/data-fetching'
 import PageGrid from './PageGrid.vue'
 import ArrowDownUp from '~icons/lucide/arrow-up-down'
-import { GPPage, GPProjectTool } from '@/types/doctypes'
+import { GPPage, GPPod } from '@/types/doctypes'
 import { UseListOptions } from 'frappe-ui/src/data-fetching/useList/types'
 
 const props = defineProps<{
@@ -70,13 +70,13 @@ const orderBy: UseListOptions<GPPage>['orderBy'] = ref('modified desc')
 
 const newPage = useNewDoc<GPPage>('GP Page', {
   project: props.spaceId,
-  project_tool: props.podId,
+  pod: props.podId,
   title: 'Untitled',
   content: '',
 })
 
-const pod = useDoc<GPProjectTool>({
-  doctype: 'GP Project Tool',
+const pod = useDoc<GPPod>({
+  doctype: 'GP Pod',
   name: () => props.podId,
 })
 

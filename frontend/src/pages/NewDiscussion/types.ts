@@ -7,7 +7,7 @@ export interface DraftData {
   title: string
   content: string
   project: string | null
-  project_tool: string | null
+  pod: string | null
 }
 
 // Document-related types

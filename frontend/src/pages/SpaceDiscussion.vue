@@ -4,10 +4,10 @@
       :spaceId="spaceId"
       :items="[
         {
-          label: discussion.doc?.project_tool_title || 'Discussions',
+          label: discussion.doc?.pod_title || 'Discussions',
           route: {
             name: 'SpaceDiscussions',
-            params: { spaceId: spaceId, podId: discussion.doc?.project_tool },
+            params: { spaceId: spaceId, podId: discussion.doc?.pod },
           },
         },
       ]"

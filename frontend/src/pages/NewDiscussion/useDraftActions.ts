@@ -84,7 +84,7 @@ export function useDraftActions(
         title: draftData.value.title,
         content: draftData.value.content,
         project: projectValue,
-        project_tool: draftData.value.project_tool || undefined,
+        pod: draftData.value.pod || undefined,
       })
       .then((doc) => {
         if (doc) {

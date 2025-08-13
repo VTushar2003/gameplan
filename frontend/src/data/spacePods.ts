@@ -1,10 +1,10 @@
 import { computed, MaybeRefOrGetter } from 'vue'
 import { useList } from 'frappe-ui'
-import { GPProjectTool } from '@/types/doctypes'
+import { GPPod } from '@/types/doctypes'
 
 export function useSpacePods(spaceId: MaybeRefOrGetter<string>) {
-  const pods = useList<GPProjectTool>({
-    doctype: 'GP Project Tool',
+  const pods = useList<GPPod>({
+    doctype: 'GP Pod',
     fields: ['name', 'project', 'type', 'title', 'idx', 'enabled'],
     filters: { project: spaceId },
     orderBy: 'idx asc',

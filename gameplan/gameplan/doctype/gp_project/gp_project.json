@@ -123,6 +123,10 @@
  "index_web_pages_for_search": 1,
  "links": [
   {
+   "link_doctype": "GP Pod",
+   "link_fieldname": "project"
+  },
+  {
    "link_doctype": "GP Task",
    "link_fieldname": "project"
   },
@@ -131,7 +135,7 @@
    "link_fieldname": "project"
   }
  ],
- "modified": "2025-08-06 00:56:45.623126",
+ "modified": "2025-08-12 15:22:31.541780",
  "modified_by": "faris@erpnext.com",
  "module": "Gameplan",
  "name": "GP Project",

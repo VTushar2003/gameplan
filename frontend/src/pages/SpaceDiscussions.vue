@@ -11,14 +11,14 @@
       </Button>
     </div>
     <DiscussionList
-      :filters="() => ({ project: spaceId, project_tool: podId ? podId : undefined })"
+      :filters="() => ({ project: spaceId, pod: podId ? podId : undefined })"
       :cacheKey="`SpaceDiscussions-${spaceId}-${podId}`"
     />
   </div>
 </template>
 <script setup lang="ts">
 import DiscussionList from '@/components/DiscussionList.vue'
-import { GPProjectTool } from '@/types/doctypes'
+import { GPPod } from '@/types/doctypes'
 import { useDoc } from 'frappe-ui'
 
 const props = defineProps<{
@@ -26,8 +26,8 @@ const props = defineProps<{
   podId: string
 }>()
 
-const pod = useDoc<GPProjectTool>({
-  doctype: 'GP Project Tool',
+const pod = useDoc<GPPod>({
+  doctype: 'GP Pod',
   name: () => props.podId,
 })
 </script>

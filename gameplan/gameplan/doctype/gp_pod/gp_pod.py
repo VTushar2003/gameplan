@@ -5,7 +5,7 @@ import frappe
 from frappe.model.document import Document
 
 
-class GPProjectTool(Document):
+class GPPod(Document):
 	def before_insert(self):
 		if not self.idx:
 			if not self.title:
@@ -13,7 +13,7 @@ class GPProjectTool(Document):
 
 			# Get the highest idx for this project and increment by 1
 			max_idx = frappe.db.get_value(
-				"GP Project Tool",
+				"GP Pod",
 				{"project": self.project},
 				[{"MAX": "idx"}],
 			)

@@ -13,7 +13,7 @@ interface ChildDocType extends DocType {
   idx?: number
 }
 
-// Last updated: 2025-08-06 16:57:19.088051
+// Last updated: 2025-08-13 19:01:35.070591
 export interface GPTask extends DocType {
   /** Title: Data */
   title: string
@@ -43,8 +43,10 @@ export interface GPTask extends DocType {
   completed_by?: string
   /** Comments Count: Int */
   comments_count?: number
-  /** Project Tool: Link (GP Project Tool) */
-  project_tool?: string
+  /** Pod: Link (GP Pod) */
+  pod?: string
+  /** Pod Title: Data */
+  pod_title?: string
 }
 
 // Last updated: 2023-01-16 13:19:48.202430
@@ -73,7 +75,7 @@ export interface GPUserProfile extends DocType {
   enabled: 0 | 1
 }
 
-// Last updated: 2025-08-06 16:58:02.566873
+// Last updated: 2025-08-13 19:02:13.641642
 export interface GPPage extends DocType {
   /** Title: Data */
   title?: string
@@ -87,10 +89,10 @@ export interface GPPage extends DocType {
   user?: string
   /** Team: Link (GP Team) */
   team?: string
-  /** Project Tool: Link (GP Project Tool) */
-  project_tool?: string
-  /** Project Tool Title: Data */
-  project_tool_title?: string
+  /** Pod: Link (GP Pod) */
+  pod?: string
+  /** Pod Title: Data */
+  pod_title?: string
 }
 
 // Last updated: 2022-12-09 12:53:23.011368
@@ -123,7 +125,7 @@ export interface GPNotification extends DocType {
   team?: string
 }
 
-// Last updated: 2025-08-06 16:56:45.864175
+// Last updated: 2025-08-13 19:08:24.097589
 export interface GPDiscussion extends DocType {
   /** Project: Link (GP Project) */
   project: string
@@ -161,8 +163,10 @@ export interface GPDiscussion extends DocType {
   last_post?: string
   /** Tags: Table (GP Tag Link) */
   tags: GPTagLink[]
-  /** Project Tool: Link (GP Project Tool) */
-  project_tool?: string
+  /** Pod: Link (GP Pod) */
+  pod?: string
+  /** Pod Title: Data */
+  pod_title?: string
 }
 
 // Last updated: 2023-02-13 21:00:23.191195
@@ -219,7 +223,7 @@ export interface GPInvitation extends DocType {
   role: '' | 'Gameplan Admin' | 'Gameplan Member' | 'Gameplan Guest'
 }
 
-// Last updated: 2025-08-06 00:56:45.623126
+// Last updated: 2025-08-12 15:22:31.541780
 export interface GPProject extends DocType {
   /** Title: Data */
   title: string
@@ -339,7 +343,7 @@ export interface GPSearchFeedback extends DocType {
   query?: string
 }
 
-// Last updated: 2025-08-06 17:47:21.422799
+// Last updated: 2025-08-13 18:59:44.760198
 export interface GPDraft extends DocType {
   /** Title: Data */
   title?: string
@@ -351,8 +355,8 @@ export interface GPDraft extends DocType {
   project?: string
   /** Team: Link (GP Team) */
   team?: string
-  /** Project Tool: Link (GP Project Tool) */
-  project_tool?: string
+  /** Pod: Link (GP Pod) */
+  pod?: string
 }
 
 // Last updated: 2025-05-22 13:12:57.407226
@@ -369,20 +373,6 @@ export interface GPTag extends DocType {
   label?: string
 }
 
-// Last updated: 2025-08-06 14:16:33.267088
-export interface GPProjectTool extends DocType {
-  /** Project: Link (GP Project) */
-  project: string
-  /** Type: Select */
-  type: 'Discussions' | 'Documents' | 'Tasks'
-  /** Title: Data */
-  title: string
-  /** Index: Int */
-  idx: number
-  /** Enabled: Check */
-  enabled: 0 | 1
-}
-
 // Last updated: 2023-01-31 15:15:16.167656
 export interface GPPinnedProject extends DocType {
   /** Project: Link (GP Project) */
@@ -393,4 +383,40 @@ export interface GPPinnedProject extends DocType {
   user: string
   /** Order: Int */
   order?: number
+}
+
+// Last updated: 2025-08-13 18:59:13.110396
+export interface GPPod extends DocType {
+  /** Type: Select */
+  type: 'Discussions' | 'Documents' | 'Tasks' | 'Chats'
+  /** Title: Data */
+  title: string
+  /** Index: Int */
+  idx: number
+  /** Enabled: Check */
+  enabled: 0 | 1
+  /** Project: Link (GP Project) */
+  project?: string
+}
+
+// Last updated: 2025-08-13 18:59:38.489724
+export interface GPChatMessage extends DocType {
+  /** Content: Text Editor */
+  content: string
+  /** Project: Link (GP Project) */
+  project: string
+  /** Team: Link (GP Team) */
+  team?: string
+  /** Message Type: Select */
+  message_type?: 'text' | 'file' | 'image'
+  /** Reactions: Table (GP Reaction) */
+  reactions: GPReaction[]
+  /** Tags: Table (GP Tag Link) */
+  tags: GPTagLink[]
+  /** Edited At: Datetime */
+  edited_at?: string
+  /** Deleted At: Datetime */
+  deleted_at?: string
+  /** Pod: Link (GP Pod) */
+  pod: string
 }

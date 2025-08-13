@@ -2,7 +2,10 @@
   <div
     class="border px-6 pt-6 pb-2.5 rounded-xl bg-surface-white hover:bg-surface-gray-1 transition-colors flex flex-col overflow-hidden w-full"
   >
-    <div class="text-left text-lg font-semibold">{{ pod.title || 'Documents' }}</div>
+    <div class="flex items-center gap-2">
+      <LucideFileText class="size-5 text-ink-gray-6" />
+      <div class="text-left text-lg font-semibold">{{ pod.title || 'Documents' }}</div>
+    </div>
     <div class="flex-1 mt-3 grid grid-cols-3 gap-3" v-if="pages.data && pages.data.length > 0">
       <div
         class="aspect-[37/50] bg-surface-white cursor-pointer overflow-hidden rounded dark:bg-gray-900 border border-gray-50 dark:border-outline-gray-1 p-3 shadow transition-shadow"
@@ -27,18 +30,18 @@
 
 <script setup lang="ts">
 import { useList, dayjsLocal } from 'frappe-ui'
-import { GPPage, GPProjectTool } from '@/types/doctypes'
+import { GPPage, GPPod } from '@/types/doctypes'
 import { useUser } from '@/data/users'
 import UserAvatar from '@/components/UserAvatar.vue'
 
 const props = defineProps<{
   spaceId: string
-  pod: GPProjectTool
+  pod: GPPod
 }>()
 
 const pages = useList<GPPage>({
   doctype: 'GP Page',
-  filters: () => ({ project: props.spaceId, project_tool: props.pod.name }),
+  filters: () => ({ project: props.spaceId, pod: props.pod.name }),
   fields: ['name', 'title', 'content', 'modified', 'owner'],
   limit: 5,
   cacheKey: `SpaceOverviewPages-${props.spaceId}`,

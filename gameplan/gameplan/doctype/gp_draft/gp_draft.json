@@ -9,7 +9,7 @@
   "content",
   "type",
   "project",
-  "project_tool",
+  "pod",
   "team"
  ],
  "fields": [
@@ -43,15 +43,15 @@
    "options": "GP Team"
   },
   {
-   "fieldname": "project_tool",
+   "fieldname": "pod",
    "fieldtype": "Link",
-   "label": "Project Tool",
-   "options": "GP Project Tool"
+   "label": "Pod",
+   "options": "GP Pod"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-06 17:47:21.422799",
+ "modified": "2025-08-13 18:59:44.760198",
  "modified_by": "faris@erpnext.com",
  "module": "Gameplan",
  "name": "GP Draft",

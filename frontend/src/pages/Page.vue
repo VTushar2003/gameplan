@@ -8,10 +8,10 @@
         :spaceId="spaceId"
         :items="[
           {
-            label: page.doc?.project_tool_title || 'Pages',
+            label: page.doc?.pod_title || 'Pages',
             route: {
               name: 'SpaceDocuments',
-              params: { spaceId: space?.name, podId: page.doc?.project_tool },
+              params: { spaceId: space?.name, podId: page.doc?.pod },
             },
           },
         ]"

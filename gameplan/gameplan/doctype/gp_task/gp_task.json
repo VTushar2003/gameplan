@@ -17,7 +17,8 @@
   "completed_by",
   "idx",
   "project",
-  "project_tool",
+  "pod",
+  "pod_title",
   "team",
   "assigned_to",
   "comments_count"
@@ -108,16 +109,23 @@
    "label": "Comments Count"
   },
   {
-   "fieldname": "project_tool",
+   "fieldname": "pod",
    "fieldtype": "Link",
-   "label": "Project Tool",
-   "options": "GP Project Tool"
+   "label": "Pod",
+   "options": "GP Pod"
+  },
+  {
+   "fetch_from": "pod.title",
+   "fieldname": "pod_title",
+   "fieldtype": "Data",
+   "label": "Pod Title",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-06 16:57:19.088051",
+ "modified": "2025-08-13 19:01:35.070591",
  "modified_by": "faris@erpnext.com",
  "module": "Gameplan",
  "name": "GP Task",

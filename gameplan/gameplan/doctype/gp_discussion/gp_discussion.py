@@ -59,9 +59,6 @@ class GPDiscussion(HasActivity, HasMentions, HasReactions, HasTags, Document):
 		d.last_unread_poll = polls[0] if polls else None
 		d.is_bookmarked = self.is_bookmarked()
 		d.views = frappe.db.count("GP Discussion Visit", {"discussion": self.name})
-		d.project_tool_title = (
-			frappe.db.get_value("GP Project Tool", self.project_tool, "title") if self.project_tool else None
-		)
 		return d
 
 	def before_insert(self):

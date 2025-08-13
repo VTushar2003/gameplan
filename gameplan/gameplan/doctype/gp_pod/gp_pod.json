@@ -8,26 +8,18 @@
  "field_order": [
   "enabled",
   "title",
-  "project",
+  "idx",
   "column_break_znis",
   "type",
-  "idx"
+  "project"
  ],
  "fields": [
-  {
-   "fieldname": "project",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Project",
-   "options": "GP Project",
-   "reqd": 1
-  },
   {
    "fieldname": "type",
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Type",
-   "options": "Discussions\nDocuments\nTasks",
+   "options": "Discussions\nDocuments\nTasks\nChats",
    "reqd": 1
   },
   {
@@ -49,15 +41,21 @@
    "fieldname": "enabled",
    "fieldtype": "Check",
    "label": "Enabled"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "GP Project"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-06 14:16:33.267088",
+ "modified": "2025-08-13 18:59:13.110396",
  "modified_by": "faris@erpnext.com",
  "module": "Gameplan",
- "name": "GP Project Tool",
+ "name": "GP Pod",
  "naming_rule": "Autoincrement",
  "owner": "faris@erpnext.com",
  "permissions": [
@@ -70,6 +68,40 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Gameplan Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Gameplan Member",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Gameplan Guest",
    "share": 1,
    "write": 1
   }

@@ -7,7 +7,8 @@
  "engine": "InnoDB",
  "field_order": [
   "project",
-  "project_tool",
+  "pod",
+  "pod_title",
   "team",
   "status",
   "title",
@@ -39,7 +40,6 @@
   {
    "fieldname": "content",
    "fieldtype": "Text Editor",
-   "in_list_view": 1,
    "label": "Content",
    "read_only": 1
   },
@@ -139,16 +139,23 @@
    "options": "GP Tag Link"
   },
   {
-   "fieldname": "project_tool",
+   "fieldname": "pod",
    "fieldtype": "Link",
-   "label": "Project Tool",
-   "options": "GP Project Tool"
+   "label": "Pod",
+   "options": "GP Pod"
+  },
+  {
+   "fetch_from": "pod.title",
+   "fieldname": "pod_title",
+   "fieldtype": "Data",
+   "label": "Pod Title",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-06 16:56:45.864175",
+ "modified": "2025-08-13 19:08:24.097589",
  "modified_by": "faris@erpnext.com",
  "module": "Gameplan",
  "name": "GP Discussion",

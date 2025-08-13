@@ -193,11 +193,12 @@ import { Dialog, Switch, FormLabel, FormControl } from 'frappe-ui'
 import CoverImage from '@/components/CoverImage.vue'
 import { useSpace, spaces } from '@/data/spaces'
 import { useSpacePods } from '@/data/spacePods'
-import { GPProjectTool } from '@/types/doctypes'
+import { GPPod } from '@/types/doctypes'
 
 import LucideMessageSquare from '~icons/lucide/message-square'
 import LucideCheckSquare from '~icons/lucide/check-square'
 import LucideFileText from '~icons/lucide/file-text'
+import LucideMessageCircle from '~icons/lucide/message-circle'
 import LucideTrash2 from '~icons/lucide/trash-2'
 
 const props = defineProps<{
@@ -211,22 +212,22 @@ const { pods } = useSpacePods(() => props.spaceId)
 // Edit state
 const showAddPodDialog = ref(false)
 const modifiedPods = ref<Set<string>>(new Set()) // Track modified pod names
-const originalPods = ref<Map<string, GPProjectTool>>(new Map()) // Store original pod data
+const originalPods = ref<Map<string, GPPod>>(new Map()) // Store original pod data
 
 // Drag and drop state
 const draggedIndex = ref<number | null>(null)
 const dragOverIndex = ref<number | null>(null)
 
 const newPod = ref<{
-  type: GPProjectTool['type']
-  title: GPProjectTool['title']
+  type: GPPod['type']
+  title: GPPod['title']
 }>({
   type: 'Discussions',
   title: '',
 })
 
 // Pod type options for Select component
-const podTypeOptions: Array<{ label: string; value: GPProjectTool['type'] }> = [
+const podTypeOptions: Array<{ label: string; value: GPPod['type'] }> = [
   { label: 'Discussions', value: 'Discussions' },
   { label: 'Tasks', value: 'Tasks' },
   { label: 'Documents', value: 'Documents' },
@@ -280,7 +281,7 @@ watch(
 )
 
 // Helper function to check if a pod has been modified
-const isPodModified = (pod: GPProjectTool): boolean => {
+const isPodModified = (pod: GPPod): boolean => {
   const original = originalPods.value.get(pod.name)
   if (!original) return false
 

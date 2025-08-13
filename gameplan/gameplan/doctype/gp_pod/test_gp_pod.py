@@ -11,9 +11,9 @@ EXTRA_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 IGNORE_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 
 
-class IntegrationTestGPProjectTool(IntegrationTestCase):
+class IntegrationTestGPPod(IntegrationTestCase):
 	"""
-	Integration tests for GPProjectTool.
+	Integration tests for GPPod.
 	Use this class for testing interactions between multiple components.
 	"""
 

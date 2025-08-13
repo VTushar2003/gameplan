@@ -23,7 +23,7 @@ import { useUser } from '@/data/users'
 import TaskList from '@/components/TaskList.vue'
 import { showNewTaskDialog } from '@/components/NewTaskDialog'
 import { useDoc } from 'frappe-ui'
-import { GPProjectTool } from '@/types/doctypes'
+import { GPPod } from '@/types/doctypes'
 
 const props = defineProps<{
   spaceId: string
@@ -34,11 +34,11 @@ const taskList = useTemplateRef<typeof TaskList>('taskList')
 
 const filters = () => ({
   project: props.spaceId,
-  project_tool: props.podId,
+  pod: props.podId,
 })
 
-const pod = useDoc<GPProjectTool>({
-  doctype: 'GP Project Tool',
+const pod = useDoc<GPPod>({
+  doctype: 'GP Pod',
   name: () => props.podId,
 })
 
@@ -46,7 +46,7 @@ function openNewTaskDialog() {
   showNewTaskDialog({
     defaults: {
       project: props.spaceId,
-      project_tool: props.podId,
+      pod: props.podId,
       assigned_to: useUser('sessionUser').name,
     },
     onSuccess: () => {
