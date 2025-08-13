@@ -116,7 +116,10 @@ after_install = "gameplan.install.after_install"
 # 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
 # }
 #
-has_permission = {"GP Page": "gameplan.gameplan.doctype.gp_page.gp_page.has_permission"}
+has_permission = {
+	"GP Page": "gameplan.mixins.permissions.has_permission",
+	"GP User Profile": "gameplan.mixins.permissions.has_permission",
+}
 
 # DocType Class
 # ---------------
