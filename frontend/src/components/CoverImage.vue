@@ -35,6 +35,7 @@
             <Button variant="outline" @click="togglePopover()"> Change Image </Button>
           </template>
         </UnsplashImageBrowser>
+        <Button variant="outline" @click="removeImage">Remove Image</Button>
         <Button v-if="editable" variant="outline" @click="startRepositionMode"> Reposition </Button>
       </div>
     </div>
@@ -187,5 +188,11 @@ const handleImageSelect = (imageUrl: string) => {
   imageDimensions.value = null
   emit('update:imageUrl', imageUrl)
   emit('change', { imageUrl, imagePosition: props.imagePosition })
+}
+
+const removeImage = () => {
+  emit('update:imageUrl', null)
+  emit('update:imagePosition', 0)
+  emit('change', { imageUrl: null, imagePosition: 0 })
 }
 </script>
