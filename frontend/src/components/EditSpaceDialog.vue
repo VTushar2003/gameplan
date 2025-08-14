@@ -16,13 +16,18 @@
             placeholder="Space name"
             v-model="space.title"
             v-focus:autoselect
+            @keydown="handleKeydown"
           />
         </div>
 
         <div class="flex items-center space-x-2">
           <div class="w-7 h-7"></div>
           <div class="flex-1 space-y-2">
-            <Textarea v-model="space.description" placeholder="Description" />
+            <Textarea
+              v-model="space.description"
+              placeholder="Description"
+              @keydown="handleKeydown"
+            />
             <FormControl
               type="checkbox"
               :label="
@@ -42,7 +47,12 @@
     </template>
     <template #actions>
       <div class="flex items-center space-x-2 justify-end">
-        <Button variant="solid" @click="submit" :loading="spaces.setValue.loading">Submit</Button>
+        <Button variant="solid" @click="submit" :loading="spaces.setValue.loading">
+          Submit
+          <template #suffix>
+            <KeyboardShortcut meta ctrl>S</KeyboardShortcut>
+          </template>
+        </Button>
       </div>
     </template>
   </Dialog>
@@ -54,6 +64,8 @@ import { useSpace } from '@/data/spaces'
 import { useDoctype } from 'frappe-ui/src/data-fetching'
 import { GPProject } from '@/types/doctypes'
 import { vFocus } from '@/directives'
+import { onMounted, onUnmounted } from 'vue'
+import KeyboardShortcut from './KeyboardShortcut.vue'
 
 const props = defineProps<{ spaceId: string }>()
 const show = defineModel<boolean>()
@@ -72,5 +84,12 @@ function submit() {
     .then(() => {
       show.value = false
     })
+}
+
+function handleKeydown(event: KeyboardEvent) {
+  if (event.key == 's' && (event.ctrlKey || event.metaKey)) {
+    event.preventDefault()
+    submit()
+  }
 }
 </script>
