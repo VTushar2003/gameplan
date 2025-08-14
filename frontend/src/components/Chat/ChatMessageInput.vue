@@ -8,7 +8,7 @@
           size="md"
         />
       </div>
-      <div class="flex-1">
+      <div class="flex-1" @keydown="handleKeydown">
         <TextEditor
           ref="editorRef"
           :content="messageContent"
@@ -17,7 +17,6 @@
           :editor-class="['prose-sm max-w-none', 'min-h-12 border rounded-lg p-2.5']"
           :starterkit-options="{ heading: false }"
           :editable="true"
-          @keydown="handleKeydown"
         />
       </div>
       <Button variant="solid" :disabled="!canSend" @click="sendMessage" :loading="isLoading">
@@ -29,17 +28,20 @@
 
 <script setup lang="ts">
 import { ref, nextTick, computed, watch } from 'vue'
-import { TextEditor, Button, Avatar } from 'frappe-ui'
+import { Button, Avatar } from 'frappe-ui'
 import { useList } from 'frappe-ui/src/data-fetching'
 import { GPChatMessage } from '@/types/doctypes'
 
 import LucideSend from '~icons/lucide/send'
 import { useSessionUser } from '@/data/users'
+import { useChatMessages } from '@/data/chatMessages'
+import TextEditor from '../TextEditor.vue'
 
 const props = defineProps<{
   spaceId: string
   podId: string
   pod?: any
+  messages: ReturnType<typeof useChatMessages>
 }>()
 
 const emit = defineEmits<{
@@ -65,14 +67,6 @@ const canSend = computed(() => {
   return textContent.length > 0
 })
 
-const messages = useList<GPChatMessage>({
-  doctype: 'GP Chat Message',
-  filters: () => ({
-    project: props.spaceId,
-    pod: props.podId,
-  }),
-})
-
 async function sendMessage() {
   if (!canSend.value) return
 
@@ -93,21 +87,20 @@ async function sendMessage() {
   isLoading.value = true
 
   try {
-    await messages.insert.submit({
-      content: messageContent.value,
-      project: props.spaceId,
-      pod: props.podId,
-      message_type: 'text',
-    })
-
-    // Clear the content
-    messageContent.value = ''
-
-    // Focus back to editor
-    await nextTick()
-    if (editorRef.value?.editor) {
-      editorRef.value.editor.commands.focus()
-    }
+    props.messages.insert
+      .submit({
+        content: messageContent.value,
+        project: props.spaceId,
+        pod: props.podId,
+        message_type: 'text',
+      })
+      .then(async () => {
+        messageContent.value = ''
+        await nextTick()
+        if (editorRef.value?.editor) {
+          editorRef.value.editor.commands.focus()
+        }
+      })
   } catch (error) {
     console.error('Failed to send message:', error)
   } finally {

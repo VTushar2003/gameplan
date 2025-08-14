@@ -1,7 +1,7 @@
 <template>
-  <div class="flex group py-1 transition-colors">
+  <div class="flex group py-1 transition-colors" :class="{ 'flex-row-reverse': isOwnMessage }">
     <!-- User Avatar -->
-    <div class="flex-shrink-0 mr-1 py-1">
+    <div class="flex-shrink-0 py-1" :class="isOwnMessage ? 'ml-1' : 'mr-1'">
       <Avatar
         :image="message.user_image"
         :label="message.user_full_name || message.owner"
@@ -10,9 +10,12 @@
     </div>
 
     <!-- Message Content -->
-    <div class="p-2.5 rounded-lg min-w-0 bg-surface-gray-1">
+    <div
+      class="p-2.5 rounded-lg min-w-0"
+      :class="isOwnMessage ? 'bg-surface-gray-2' : 'bg-surface-gray-1'"
+    >
       <!-- Header with user name and timestamp -->
-      <div class="flex items-baseline gap-2 mb-1">
+      <div class="flex items-baseline gap-2 mb-1" v-if="!isOwnMessage">
         <span class="text-sm font-medium text-ink-gray-8">
           {{ message.user_full_name || message.owner }}
         </span>
@@ -23,15 +26,22 @@
       </div>
 
       <!-- Message content -->
-      <div class="text-sm text-ink-gray-7 prose prose-sm max-w-none">
+      <div
+        class="text-sm text-ink-gray-7 prose prose-sm max-w-none"
+        :class="{ 'text-right': isOwnMessage }"
+      >
         <div v-html="message.content"></div>
       </div>
 
       <!-- Reactions (placeholder) -->
-      <div v-if="message.reactions?.length" class="mt-2 flex gap-1">
+      <div
+        v-if="groupedReactions.length"
+        class="mt-2 flex gap-1"
+        :class="{ 'justify-end': isOwnMessage }"
+      >
         <span
-          v-for="reaction in message.reactions"
-          :key="reaction.name"
+          v-for="reaction in groupedReactions"
+          :key="reaction.emoji"
           class="inline-flex items-center px-2 py-1 rounded-full bg-surface-gray-2 text-xs"
         >
           {{ reaction.emoji }} {{ reaction.count }}
@@ -40,8 +50,14 @@
     </div>
 
     <!-- Message actions (on hover) -->
-    <div class="opacity-0 group-hover:opacity-100 transition-opacity ml-1">
-      <DropdownMoreOptions placement="bottom-end" :options="messageActions" />
+    <div
+      class="opacity-0 group-hover:opacity-100 transition-opacity"
+      :class="isOwnMessage ? 'mr-1' : 'ml-1'"
+    >
+      <DropdownMoreOptions
+        :placement="isOwnMessage ? 'bottom-start' : 'bottom-end'"
+        :options="messageActions"
+      />
     </div>
   </div>
 </template>
@@ -52,10 +68,29 @@ import { Avatar } from 'frappe-ui'
 import { ChatMessage } from '@/data/chatMessages'
 import DropdownMoreOptions from '../DropdownMoreOptions.vue'
 import { shortTimestamp } from '@/utils'
+import { session } from '@/data/session'
 
 const props = defineProps<{
   message: ChatMessage
 }>()
+
+// Check if the message is from the current user
+const isOwnMessage = computed(() => {
+  return session.user === props.message.owner
+})
+
+// Group reactions by emoji and count them
+const groupedReactions = computed(() => {
+  if (!props.message.reactions?.length) return []
+
+  const reactionMap = new Map<string, number>()
+  props.message.reactions.forEach((reaction) => {
+    const count = reactionMap.get(reaction.emoji) || 0
+    reactionMap.set(reaction.emoji, count + 1)
+  })
+
+  return Array.from(reactionMap.entries()).map(([emoji, count]) => ({ emoji, count }))
+})
 
 function formatMessageTime(timestamp: string) {
   const date = new Date(timestamp)
@@ -78,7 +113,7 @@ const messageActions = computed(() => [
       // TODO: Implement edit
       console.log('Edit message', props.message.name)
     },
-    condition: () => true, // TODO: Check if user owns the message
+    condition: () => isOwnMessage.value,
   },
   {
     label: 'Delete',
@@ -87,7 +122,7 @@ const messageActions = computed(() => [
       // TODO: Implement delete
       console.log('Delete message', props.message.name)
     },
-    condition: () => true, // TODO: Check if user owns the message
+    condition: () => isOwnMessage.value,
   },
 ])
 </script>

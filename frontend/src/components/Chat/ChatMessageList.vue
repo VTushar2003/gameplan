@@ -43,7 +43,7 @@
           :spaceId="spaceId"
           :podId="podId"
           :pod="pod"
-          @message-sent="handleMessageSent"
+          :messages="messages"
         />
       </div>
     </div>
