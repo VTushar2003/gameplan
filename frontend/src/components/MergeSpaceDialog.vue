@@ -20,7 +20,12 @@
           <span class="whitespace-nowrap font-semibold">{{ space?.title }}</span> space to the
           selected space. This change is irreversible!
         </p>
-        <Combobox :options="spaceOptions" v-model="selectedSpace" placeholder="Select a space">
+        <Combobox
+          :options="spaceOptions"
+          v-focus
+          v-model="selectedSpace"
+          placeholder="Select a space"
+        >
           <template #item-prefix="{ option }">
             <span class="mr-2">{{ option.icon }}</span>
           </template>
@@ -130,6 +135,7 @@ import { GPProject } from '@/types/doctypes'
 import UserAvatar from './UserAvatar.vue'
 import { useSpace, useSpaceOptions } from '@/data/spaces'
 import { useUser } from '@/data/users'
+import { vFocus } from '@/directives'
 
 import LucideMessageSquare from '~icons/lucide/message-square'
 import LucideAlertTriangle from '~icons/lucide/alert-triangle'
