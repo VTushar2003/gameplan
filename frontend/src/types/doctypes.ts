@@ -125,7 +125,7 @@ export interface GPNotification extends DocType {
   team?: string
 }
 
-// Last updated: 2025-08-13 19:08:24.097589
+// Last updated: 2025-08-14 01:13:09.329912
 export interface GPDiscussion extends DocType {
   /** Project: Link (GP Project) */
   project: string
@@ -419,4 +419,18 @@ export interface GPChatMessage extends DocType {
   deleted_at?: string
   /** Pod: Link (GP Pod) */
   pod: string
+}
+
+// Last updated: 2025-08-14 01:54:57.550314
+export interface GPExternalURL extends DocType {
+  /** URL: Data */
+  url: string
+  /** Title: Data */
+  title?: string
+  /** Service: Select */
+  service?: '' | 'Figma' | 'Google Sheets'
+  /** Project: Link (GP Project) */
+  project?: string
+  /** Pod: Link (GP Pod) */
+  pod?: string
 }

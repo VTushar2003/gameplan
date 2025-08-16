@@ -35,18 +35,44 @@
             </Button>
           </template>
         </Dropdown>
-        <Button variant="solid" @click="createNewPage">
-          <template #prefix><LucidePlus class="w-4" /></template>
-          <span class="whitespace-nowrap"> Add new </span>
-        </Button>
+        <Dropdown
+          :options="[
+            {
+              label: 'Add Page',
+              icon: 'file-text',
+              onClick: createNewPage,
+            },
+            {
+              label: 'Add External Link',
+              icon: 'external-link',
+              onClick: () => (showAddExternalLinkModal = true),
+            },
+          ]"
+          placement="bottom-end"
+        >
+          <template #default>
+            <Button variant="solid">
+              <template #prefix><LucidePlus class="w-4" /></template>
+              <span class="whitespace-nowrap"> Add new </span>
+              <template #suffix><LucideChevronDown class="w-4 ml-1" /></template>
+            </Button>
+          </template>
+        </Dropdown>
       </div>
     </div>
     <PageGrid
       class="grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 lg:grid-cols-4 px-3"
       :listOptions="{
         filters: { project: spaceId, pod: podId ? podId : undefined },
-        orderBy: () => orderBy,
+        orderBy: orderBy,
       }"
+    />
+
+    <AddExternalLinkModal
+      v-model="showAddExternalLinkModal"
+      :spaceId="spaceId"
+      :podId="podId"
+      @success="onExternalLinkAdded"
     />
   </div>
 </template>
@@ -56,9 +82,9 @@ import { useRouter } from 'vue-router'
 import { Dropdown } from 'frappe-ui'
 import { useDoc, useNewDoc } from 'frappe-ui/src/data-fetching'
 import PageGrid from './PageGrid.vue'
+import AddExternalLinkModal from '@/components/AddExternalLinkModal.vue'
 import ArrowDownUp from '~icons/lucide/arrow-up-down'
 import { GPPage, GPPod } from '@/types/doctypes'
-import { UseListOptions } from 'frappe-ui/src/data-fetching/useList/types'
 
 const props = defineProps<{
   spaceId: string
@@ -66,14 +92,10 @@ const props = defineProps<{
 }>()
 
 const router = useRouter()
-const orderBy: UseListOptions<GPPage>['orderBy'] = ref('modified desc')
+const orderBy = ref<'title asc' | 'modified desc' | 'creation desc'>('modified desc')
+const showAddExternalLinkModal = ref(false)
 
-const newPage = useNewDoc<GPPage>('GP Page', {
-  project: props.spaceId,
-  pod: props.podId,
-  title: 'Untitled',
-  content: '',
-})
+const newPage = useNewDoc<GPPage>('GP Page')
 
 const pod = useDoc<GPPod>({
   doctype: 'GP Pod',
@@ -81,12 +103,24 @@ const pod = useDoc<GPPod>({
 })
 
 function createNewPage() {
+  newPage.doc = {
+    project: props.spaceId,
+    pod: props.podId,
+    title: 'Untitled',
+    content: '',
+  }
+
   newPage.submit().then((doc) => {
     router.push({
       name: 'Page',
       params: { pageId: doc.name },
     })
   })
+}
+
+function onExternalLinkAdded() {
+  // The PageGrid will automatically refresh its data
+  // since it uses the documents composable which handles caching
 }
 </script>
 <style scoped>

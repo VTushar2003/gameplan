@@ -36,6 +36,7 @@ export default defineConfig({
             'gp_pinned_project',
             'gp_chat_message',
             'gp_pod',
+            'gp_external_url',
           ],
         },
       },
