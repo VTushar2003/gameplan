@@ -174,6 +174,13 @@ item.customMethod.submit({ param: 'value' }) // call custom method
   import LucideIconName from '~icons/lucide/icon-name'
   ```
 
+## Utilities and Composables
+
+- @vueuse/core is installed in this project
+- If there is a scenario where a vueuse composable can simplify the code, prefer using it over custom implementations
+- common composables include `useLocalStorage`, and `useDebounce`
+- dont use `useFetch` because we use `useList`, `useDoc`, `useCall` for data fetching from frappe-ui
+
 ### Error Handling
 - Use global error handler (`app.config.errorHandler`) for uncaught errors
 - Wrap risky logic in `try/catch`; provide user-friendly messages
