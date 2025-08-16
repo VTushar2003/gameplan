@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useDoctype } from 'frappe-ui'
+import { toast, useDoctype } from 'frappe-ui'
 import DropdownMoreOptions from './DropdownMoreOptions.vue'
 import MergeSpaceDialog from './MergeSpaceDialog.vue'
 import ChangeSpaceCategoryDialog from './ChangeSpaceCategoryDialog.vue'
@@ -60,7 +60,9 @@ const options = computed(() => [
       if (isPinned(props.spaceId)) {
         return unpinSpace(props.spaceId)
       } else {
-        return pinSpace(props.spaceId)
+        return pinSpace(props.spaceId).then(() => {
+          toast.success(`${space.value?.title} added to My Spaces`)
+        })
       }
     },
     condition: () => !space.value?.archived_at,

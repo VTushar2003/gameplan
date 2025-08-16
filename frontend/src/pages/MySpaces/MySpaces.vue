@@ -24,11 +24,14 @@
               Browse all spaces
             </Button>
 
-            <DropdownMoreOptions
+            <Button
+              variant="ghost"
+              @click="onCustomizeClick"
               v-if="!customizeMode"
-              :options="[{ label: 'Customize', onClick: onCustomizeClick }]"
-              placement="right"
-            />
+              tooltip="Customize your spaces"
+            >
+              <LucideBlocks class="h-4 w-4 text-ink-gray-6" />
+            </Button>
 
             <Button
               v-if="customizeMode"

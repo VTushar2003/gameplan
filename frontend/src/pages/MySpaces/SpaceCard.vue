@@ -24,7 +24,7 @@
       class="absolute inset-0 bg-gradient-to-t dark:from-black/95 dark:via-black/65 dark:to-black/10 from-white/95 via-white/65 to-transparent"
     ></div>
 
-    <div class="flex flex-col h-full">
+    <div class="flex flex-col h-full isolate">
       <!-- Space Icon, Unread Count, Archived Badge -->
       <div class="flex items-center justify-between">
         <div class="text-2xl font-[emoji]">{{ space?.icon }}</div>

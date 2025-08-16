@@ -11,12 +11,9 @@
 
     <!-- Recent messages preview -->
     <div class="flex-1 min-h-0 relative overflow-hidden">
-      <div class="space-y-3 absolute bottom-2">
-        <div v-if="recentMessages.loading" class="text-sm text-ink-gray-5">Loading messages...</div>
-        <div
-          v-else-if="recentMessages.data?.length"
-          class="gap-2 flex flex-col justify-end max-h-64 overflow-hidden"
-        >
+      <div v-if="recentMessages.loading" class="text-sm text-ink-gray-5">Loading messages...</div>
+      <div v-else-if="recentMessages.data?.length" class="space-y-3 absolute bottom-2">
+        <div class="gap-2 flex flex-col justify-end max-h-64 overflow-hidden">
           <div
             v-for="message in [...(recentMessages.data || [])].reverse()"
             :key="message.name"
@@ -45,10 +42,10 @@
             </div>
           </div>
         </div>
-        <div v-else class="text-center py-4 text-ink-gray-5">
-          <LucideMessageCircle class="size-6 mx-auto text-ink-gray-4 mb-2" />
-          <p class="text-sm">No messages yet</p>
-        </div>
+      </div>
+      <div v-else class="h-full grid place-content-center text-ink-gray-5">
+        <LucideMessageCircle class="size-6 mx-auto text-ink-gray-4 mb-2" />
+        <p class="text-sm">No messages yet</p>
       </div>
     </div>
   </div>

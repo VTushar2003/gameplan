@@ -7,7 +7,7 @@
         <div v-if="space?.cover_image" class="h-full w-full">
           <img
             :src="space.cover_image"
-            :style="{ objectPosition: `center ${space.cover_image_position || 50}%` }"
+            :style="{ objectPosition: `center ${space.cover_image_position}%` }"
             class="h-full w-full object-cover"
             alt="Space cover"
           />

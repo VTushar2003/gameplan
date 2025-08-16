@@ -59,7 +59,7 @@
         ]"
       >
         <!-- Pod Edit Card -->
-        <div class="flex items-center justify-between mb-4 gap-2">
+        <div class="flex items-center justify-between mb-4 gap-6">
           <div class="flex items-center gap-2 flex-1">
             <!-- Drag Handle is now the entire card for better UX -->
 
@@ -67,7 +67,7 @@
               v-model="pod.title"
               @input="(event) => updatePodTitle(pod.name, (event.target as HTMLInputElement).value)"
               placeholder="Pod title"
-              class="text-lg font-semibold bg-transparent border border-transparent text-ink-gray-8 p-0 focus:ring-0 hover:border-outline-gray-2 focus:border-outline-gray-2 rounded-sm px-0.5 py-1"
+              class="text-lg w-full font-semibold bg-transparent border border-transparent text-ink-gray-8 p-0 focus:ring-0 hover:border-outline-gray-2 focus:border-outline-gray-2 rounded-sm px-0.5 py-1"
             />
           </div>
 
@@ -385,7 +385,7 @@ const saveChanges = async () => {
 
   if (modifiedPodsList.length === 0) {
     // No changes to save, just navigate back
-    router.push({ name: 'SpaceOverview', params: { spaceId: props.spaceId } })
+    router.replace({ name: 'SpaceOverview', params: { spaceId: props.spaceId } })
     return
   }
 
@@ -404,7 +404,7 @@ const saveChanges = async () => {
     modifiedPods.value.clear()
 
     // Navigate back to space overview
-    router.push({ name: 'SpaceOverview', params: { spaceId: props.spaceId } })
+    router.replace({ name: 'SpaceOverview', params: { spaceId: props.spaceId } })
   } catch (error) {
     console.error('Error saving pods:', error)
   }
