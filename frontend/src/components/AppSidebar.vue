@@ -1,6 +1,6 @@
 <template>
   <ScrollAreaViewport
-    class="inline-flex h-full flex-1 flex-col overflow-y-auto border-r bg-surface-menu-bar pb-40 w-60"
+    class="inline-flex group/sidebar h-full flex-1 flex-col overflow-y-auto border-r bg-surface-menu-bar pb-40 w-60"
   >
     <div class="flex flex-col px-2 py-2">
       <UserDropdown />
@@ -10,14 +10,22 @@
         <AppSidebarLink
           class="group"
           :to="{ name: 'Home' }"
-          :isActive="testRoute(/Discussions|Spaces/g)"
+          :isActive="
+            preferredHomePage === 'Discussions' ? testRoute(/Discussions/g) : testRoute(/Spaces/g)
+          "
         >
-          <template #prefix><LucideNewspaper class="h-4 w-4 text-ink-gray-6" /></template>
-          Home
+          <template #prefix>
+            <LucideNewspaper
+              v-if="preferredHomePage === 'Discussions'"
+              class="h-4 w-4 text-ink-gray-6"
+            />
+            <LucideLayoutGrid v-else class="h-4 w-4 text-ink-gray-6" />
+          </template>
+          {{ preferredHomePage }}
           <template #suffix>
             <button
               @click.stop.prevent="showHomePageSettingsDialog = true"
-              class="group-hover:opacity-100 opacity-0 transition-opacity flex items-center justify-center p-0.5 hover:bg-surface-gray-1 rounded-sm"
+              class="group-hover/sidebar:opacity-100 opacity-0 transition-opacity flex items-center justify-center p-0.5 hover:bg-surface-gray-1 rounded-sm"
             >
               <LucideSettings2 class="h-4 w-4 text-ink-gray-6" />
             </button>
@@ -128,9 +136,12 @@ import { noCategories, useGroupedSpaces } from '@/data/groupedSpaces'
 import { unreadNotifications } from '@/data/notifications'
 import { joinedSpaces, getSpaceUnreadCount } from '@/data/spaces'
 import { useSessionUser } from '@/data/users'
+import { usePreferredHomePage } from '@/composables/usePreferredHomePage'
 import NewSpaceDialog from './NewSpaceDialog.vue'
+import AppSidebarLink from './AppSidebarLink.vue'
 import AppLink from './AppLink.vue'
 import UserDropdown from './UserDropdown.vue'
+import DropdownMoreOptions from './DropdownMoreOptions.vue'
 import { ScrollAreaViewport } from 'reka-ui'
 import ScrollBar from './ScrollBar.vue'
 import HomePageSettingsDialog from './HomePageSettingsDialog.vue'
@@ -143,9 +154,12 @@ import LucideNewspaper from '~icons/lucide/newspaper'
 import LucideUsers2 from '~icons/lucide/users-2'
 import LucideSettings2 from '~icons/lucide/settings-2'
 import LucideSearch from '~icons/lucide/search'
+import LucideLayoutGrid from '~icons/lucide/layout-grid'
+import LucideLock from '~icons/lucide/lock'
 
 const showAddTeamDialog = ref(false)
 const showHomePageSettingsDialog = ref(false)
+const preferredHomePage = usePreferredHomePage()
 
 const route = useRoute()
 const sessionUser = useSessionUser()
@@ -164,6 +178,25 @@ let groupedSpaces = computed(() => {
 
 const navigation = computed(() => {
   return [
+    {
+      name: 'Spaces',
+      icon: LucideLayoutGrid,
+      route: {
+        name: 'Spaces',
+      },
+      isActive: testRoute(/Spaces|Space/g),
+      condition: () => preferredHomePage.value == 'Discussions',
+    },
+    {
+      name: 'Discussions',
+      icon: LucideNewspaper,
+      route: {
+        name: 'DiscussionsTab',
+        params: { feedType: 'recent' },
+      },
+      isActive: testRoute(/Discussions/g),
+      condition: () => preferredHomePage.value == 'Spaces',
+    },
     {
       name: 'Inbox',
       icon: LucideInbox,

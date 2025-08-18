@@ -46,8 +46,8 @@
 import { ref, watch } from 'vue'
 import { Dialog, Select } from 'frappe-ui'
 import { RadioGroupRoot, RadioGroupItem, RadioGroupIndicator } from 'reka-ui'
-import { useLocalStorage } from '@vueuse/core'
 import { useRouter } from 'vue-router'
+import { usePreferredHomePage } from '@/composables/usePreferredHomePage'
 import CircleCheck from 'frappe-ui/src/icons/CircleCheck.vue'
 
 const props = defineProps<{
@@ -58,7 +58,7 @@ const emit = defineEmits<{
   (event: 'update:modelValue', value: boolean): void
 }>()
 
-const preferredHomePage = useLocalStorage('preferredHomePage', 'Discussions')
+const preferredHomePage = usePreferredHomePage()
 const selectedHomePage = ref(preferredHomePage.value)
 
 const homePageOptions = [

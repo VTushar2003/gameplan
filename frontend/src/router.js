@@ -3,14 +3,15 @@ import { session } from './data/session'
 import { users } from './data/users'
 import { getScrollContainer, scrollTo } from './utils/scrollContainer'
 import { spaces } from './data/spaces'
-import { until, useLocalStorage } from '@vueuse/core'
+import { until } from '@vueuse/core'
+import { usePreferredHomePage } from './composables/usePreferredHomePage'
 
 let defaultRoute = window.default_route
 if (!defaultRoute || defaultRoute?.includes('{{')) {
   defaultRoute = '/home'
 }
 
-const preferredHomePage = useLocalStorage('preferredHomePage', 'Discussions')
+const preferredHomePage = usePreferredHomePage()
 
 let router = createRouter({
   history: createWebHistory('/g/'),
