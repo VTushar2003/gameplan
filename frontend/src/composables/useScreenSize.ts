@@ -1,4 +1,4 @@
-import { computed, onMounted, onUnmounted, reactive } from 'vue'
+import { onMounted, onUnmounted, reactive } from 'vue'
 
 export function useScreenSize() {
   const size = reactive({
@@ -20,9 +20,4 @@ export function useScreenSize() {
   })
 
   return size
-}
-
-export function isMobile() {
-  let size = useScreenSize()
-  return computed(() => size.width < 640)
 }

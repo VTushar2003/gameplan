@@ -11,7 +11,7 @@
   </div>
 </template>
 <script setup>
-import { useScreenSize } from '@/utils/composables'
+import { useScreenSize } from '@/composables/useScreenSize'
 import { defineAsyncComponent, computed } from 'vue'
 
 const screenSize = useScreenSize()

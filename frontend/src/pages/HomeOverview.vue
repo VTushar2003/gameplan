@@ -33,7 +33,7 @@
 </template>
 <script setup>
 import { computed } from 'vue'
-import { useScreenSize } from '@/utils/composables'
+import { useScreenSize } from '@/composables/useScreenSize'
 
 const screenSize = useScreenSize()
 const pageLength = computed(() => {

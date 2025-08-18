@@ -6,7 +6,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { TabButtons, Select } from 'frappe-ui'
-import { useScreenSize } from '@/utils/composables'
+import { useScreenSize } from '@/composables/useScreenSize'
 
 const props = defineProps<{
   spaceId: string

@@ -218,7 +218,7 @@ import { useDiscussion } from '@/data/discussions'
 import { tags } from '@/data/tags'
 import { createDialog } from '@/utils/dialogs'
 import { useScrollPosition } from '@/utils/scrollContainer'
-import { isMobile } from '@/utils/composables'
+import { isMobile } from '@/composables/isMobile'
 import { useRichQuoteHandler } from '@/components/RichQuoteExtension/useRichQuoteHandler'
 
 import LucideArrowUp from '~icons/lucide/arrow-up'

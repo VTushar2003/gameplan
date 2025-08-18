@@ -17,7 +17,7 @@ import { FrappeUIProvider } from 'frappe-ui'
 import { ScrollAreaRoot } from 'reka-ui'
 import { Dialogs } from '@/utils/dialogs'
 import { users } from '@/data/users'
-import { useScreenSize } from './utils/composables'
+import { useScreenSize } from '@/composables/useScreenSize'
 import NewTaskDialog from './components/NewTaskDialog/NewTaskDialog.vue'
 
 const screenSize = useScreenSize()

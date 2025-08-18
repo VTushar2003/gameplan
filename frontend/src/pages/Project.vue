@@ -275,7 +275,6 @@
   </div>
 </template>
 <script>
-import { computed } from 'vue'
 import {
   Autocomplete,
   Dropdown,
@@ -296,7 +295,7 @@ import { projects } from '@/data/projects'
 import { activeTeams, teams } from '@/data/teams'
 import PinIcon from '~icons/lucide/pin'
 import LucideMerge from '~icons/lucide/merge'
-import { useScreenSize } from '@/utils/composables'
+import { isMobile as useMobile } from '@/composables/isMobile'
 
 export default {
   name: 'Project',
@@ -317,8 +316,7 @@ export default {
     Breadcrumbs,
   },
   setup() {
-    const size = useScreenSize()
-    const isMobile = computed(() => size.width < 640)
+    const isMobile = useMobile()
     return {
       PinIcon,
       LucideMerge,
