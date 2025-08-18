@@ -60,11 +60,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, nextTick, computed } from 'vue'
+import { ref, nextTick, computed } from 'vue'
 import { RecycleScroller } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import { useRoute } from 'vue-router'
 import { Breadcrumbs, TabButtons, Button } from 'frappe-ui'
+import { useWindowSize } from '@vueuse/core'
 import NewSpaceDialog from '@/components/NewSpaceDialog.vue'
 import PageHeader from '@/components/PageHeader.vue'
 import EmptyStateBox from '@/components/EmptyStateBox.vue'
@@ -99,7 +100,7 @@ const groupedSpaces = computed(() => {
   let gapBetweenGroups = 48
 
   for (const group of _groupedSpaces.value) {
-    let rows = Math.ceil(group.spaces.length / 4)
+    let rows = Math.ceil(group.spaces.length / columns.value)
     let gapHeight = (rows - 1) * gap
     let groupHeight = categoryHeight + gapHeight + rows * cardHeight + gapBetweenGroups
     out.push({
@@ -136,4 +137,12 @@ function scrollToCategory(categoryId: string) {
 function setGroupRefs(el: HTMLElement, name: string) {
   groupRefs.value[name] = el
 }
+
+const columns = computed(() => {
+  const { width } = useWindowSize()
+  if (width.value < 768) return 1
+  if (width.value < 1024) return 2
+  if (width.value < 1280) return 3
+  return 4
+})
 </script>

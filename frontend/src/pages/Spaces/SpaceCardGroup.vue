@@ -10,7 +10,7 @@
       </Badge>
       <DropdownMoreOptions class="ml-auto" placement="right" :options="categoryOptions(group)" />
     </div>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 px-3">
+    <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 px-3">
       <SpaceCard v-for="(d, index) in group.spaces" :key="d.name" :space="d" />
     </div>
     <EditCategoryDialog ref="editCategoryDialog" />
