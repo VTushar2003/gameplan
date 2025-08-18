@@ -4,11 +4,11 @@
 
 import frappe
 
-from gameplan.search import GameplanSearch
-
 
 @frappe.whitelist()
 def search(query):
+	from gameplan.search import GameplanSearch
+
 	search = GameplanSearch()
 	query = search.clean_query(query)
 
