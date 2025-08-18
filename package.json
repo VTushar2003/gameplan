@@ -7,8 +7,6 @@
         "postinstall": "npm run frontend:pnpm_install",
         "dev": "cd frontend && pnpm dev",
         "build": "npm run check-pnpm && cd frontend && npm run build",
-        "disable-workspaces": "chmod +x ./scripts/manage_workspaces.sh && ./scripts/manage_workspaces.sh disable",
-        "enable-workspaces": "chmod +x ./scripts/manage_workspaces.sh && ./scripts/manage_workspaces.sh enable",
         "upgrade-frappeui": "cd frontend && pnpm add frappe-ui@latest && cd .."
     }
 }

@@ -122,8 +122,8 @@ importers:
         specifier: ^3.3.0
         version: 3.3.0
       lucide-static:
-        specifier: ^0.479.0
-        version: 0.479.0
+        specifier: ^0.535.0
+        version: 0.535.0
       marked:
         specifier: ^15.0.12
         version: 15.0.12
@@ -2605,8 +2605,8 @@ packages:
   lucide-static@0.469.0:
     resolution: {integrity: sha512-ravTgZodIVLO53rJyjIq0iuCRHs+kjd3dAfOcTbA41KCDfdy0Pt6Me8akkhda3jRpbIxjKe1PpYZOg2eQnI/lA==}
 
-  lucide-static@0.479.0:
-    resolution: {integrity: sha512-E+w3/8lKFpey3lZNKZfzHQGX+t/CH/afpPDdQxjBgStZ2bXY+CxI5KFX9TW818gYndLjV43fZJ7FqAO9kTCK4A==}
+  lucide-static@0.535.0:
+    resolution: {integrity: sha512-wlYTSPpeyMjLjQ5jgSAENQwVfURVf2XHV5TDp8YPCJBEyWz+FJGuGB5LYBgOFvWIDOMW+AIoiA8sNd8My/nxlw==}
 
   magic-string@0.30.17:
     resolution: {integrity: sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==}
@@ -6377,7 +6377,7 @@ snapshots:
 
   lucide-static@0.469.0: {}
 
-  lucide-static@0.479.0: {}
+  lucide-static@0.535.0: {}
 
   magic-string@0.30.17:
     dependencies:
