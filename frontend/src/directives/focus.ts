@@ -1,14 +1,15 @@
-import type { ObjectDirective, DirectiveBinding } from 'vue'
+import { type ObjectDirective, type DirectiveBinding, nextTick } from 'vue'
 
 interface FocusDirective extends ObjectDirective<HTMLElement> {
   mounted(el: HTMLElement, binding: DirectiveBinding<boolean>): void
 }
 
 const focusDirective: FocusDirective = {
-  mounted(el, binding) {
+  async mounted(el, binding) {
     if (binding.value === false) {
       return
     }
+    await nextTick()
     let firstFocusableElement = getFirstFocusableElement(el)
     if (firstFocusableElement) {
       firstFocusableElement.focus()
