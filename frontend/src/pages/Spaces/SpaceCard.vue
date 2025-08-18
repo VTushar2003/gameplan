@@ -32,33 +32,33 @@
 
       <div class="flex absolute bottom-2 right-2 items-center space-x-1" @click.prevent>
         <template v-if="!space.archived_at">
-          <Tooltip :text="'Leave space'" v-if="hasJoined(space.name)">
-            <Button
-              variant="ghost"
-              class="group-hover:opacity-100 sm:opacity-0 transition-opacity opacity-100"
-              @click="leaveSpace(space)"
-              :loading="isDocMethodLoading(space.name, 'leave')"
-            >
-              <template #icon>
-                <LucideUserRoundMinus class="size-4" />
-              </template>
-            </Button>
-          </Tooltip>
-          <Tooltip :text="'Join space'" v-else>
-            <Button
-              size="sm"
-              variant="ghost"
-              class="group-hover:opacity-100 sm:opacity-0 transition-opacity opacity-100"
-              @click="joinSpace(space)"
-              :loading="isDocMethodLoading(space.name, 'join')"
-            >
-              <template #icon>
-                <LucideUserRoundPlus class="h-4 w-4" />
-              </template>
-            </Button>
-          </Tooltip>
+          <Button
+            v-if="hasJoined(space.name)"
+            :tooltip="'Leave space'"
+            variant="ghost"
+            class="group-hover:opacity-100 sm:opacity-0 transition-opacity opacity-100 focus:opacity-100"
+            @click="leaveSpace(space)"
+            :loading="isDocMethodLoading(space.name, 'leave')"
+          >
+            <template #icon>
+              <LucideUserRoundMinus class="size-4" />
+            </template>
+          </Button>
+          <Button
+            :tooltip="'Join space'"
+            v-else
+            size="sm"
+            variant="ghost"
+            class="group-hover:opacity-100 sm:opacity-0 transition-opacity opacity-100 focus:opacity-100"
+            @click="joinSpace(space)"
+            :loading="isDocMethodLoading(space.name, 'join')"
+          >
+            <template #icon>
+              <LucideUserRoundPlus class="h-4 w-4" />
+            </template>
+          </Button>
           <div
-            class="group-hover:opacity-100 sm:opacity-0 transition-opacity opacity-100 has-[[data-state=open]]:opacity-100"
+            class="group-hover:opacity-100 sm:opacity-0 transition-opacity opacity-100 has-[[data-state=open]]:opacity-100 focus-within:opacity-100"
           >
             <SpaceOptions placement="right" :spaceId="space.name" />
           </div>
