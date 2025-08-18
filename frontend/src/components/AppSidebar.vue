@@ -1,5 +1,7 @@
 <template>
   <ScrollAreaViewport
+    @mouseenter="onMouseEnter"
+    @mouseleave="onMouseLeave"
     class="inline-flex group/sidebar h-full flex-1 flex-col overflow-y-auto border-r bg-surface-menu-bar pb-40 w-60"
   >
     <div class="flex flex-col px-2 py-2">
@@ -25,7 +27,8 @@
           <template #suffix>
             <button
               @click.stop.prevent="showHomePageSettingsDialog = true"
-              class="group-hover/sidebar:opacity-100 opacity-0 transition-opacity flex items-center justify-center p-0.5 hover:bg-surface-gray-1 rounded-sm"
+              class="transition-opacity flex items-center justify-center p-0.5 hover:bg-surface-gray-1 rounded-sm"
+              :class="{ 'opacity-100': showButtons, 'opacity-0': !showButtons }"
             >
               <LucideSettings2 class="h-4 w-4 text-ink-gray-6" />
             </button>
@@ -57,13 +60,40 @@
       <div class="mt-6 flex items-center justify-between px-2">
         <h3 class="px-2 py-1.5 text-sm text-ink-gray-5">Spaces</h3>
         <div class="space-x-1 flex items-center">
-          <DropdownMoreOptions
+          <Button
+            class="transition-opacity"
+            :class="{ 'opacity-100': showButtons, 'opacity-0': !showButtons }"
+            variant="ghost"
+            @click="toggleAllGroups"
+            :tooltip="allGroupsExpanded ? 'Collapse all' : 'Expand all'"
+          >
+            <LucideFoldVertical v-if="allGroupsExpanded" class="size-4 text-ink-gray-6" />
+            <LucideUnfoldVertical v-else class="size-4 text-ink-gray-6" />
+          </Button>
+          <Dropdown
             placement="right"
             :options="[
-              { label: 'View all spaces', onClick: () => $router.push({ name: 'Spaces' }) },
-              { label: 'New Space', onClick: () => (showAddTeamDialog = true) },
+              {
+                label: 'Show all spaces',
+                onClick: () => setSpaceFilter('all'),
+                icon: spaceFilter === 'all' ? LucideCheck : undefined,
+              },
+              {
+                label: 'Show joined spaces',
+                onClick: () => setSpaceFilter('joined'),
+                icon: spaceFilter === 'joined' ? LucideCheck : undefined,
+              },
             ]"
-          />
+            v-slot="{ open }"
+          >
+            <Button
+              :variant="open ? 'subtle' : 'ghost'"
+              class="transition-opacity focus:opacity-100"
+              :class="{ 'opacity-100': showButtons || open, 'opacity-0': !showButtons && !open }"
+            >
+              <LucideMoreHorizontal class="size-4 text-ink-gray-6" />
+            </Button>
+          </Dropdown>
         </div>
       </div>
       <nav class="mt-1 space-y-1 px-2">
@@ -130,8 +160,10 @@
   <HomePageSettingsDialog v-model="showHomePageSettingsDialog" />
 </template>
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, ref, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { Dropdown } from 'frappe-ui'
+import { useLocalStorage } from '@vueuse/core'
 import { noCategories, useGroupedSpaces } from '@/data/groupedSpaces'
 import { unreadNotifications } from '@/data/notifications'
 import { joinedSpaces, getSpaceUnreadCount } from '@/data/spaces'
@@ -141,7 +173,6 @@ import NewSpaceDialog from './NewSpaceDialog.vue'
 import AppSidebarLink from './AppSidebarLink.vue'
 import AppLink from './AppLink.vue'
 import UserDropdown from './UserDropdown.vue'
-import DropdownMoreOptions from './DropdownMoreOptions.vue'
 import { ScrollAreaViewport } from 'reka-ui'
 import ScrollBar from './ScrollBar.vue'
 import HomePageSettingsDialog from './HomePageSettingsDialog.vue'
@@ -156,25 +187,55 @@ import LucideSettings2 from '~icons/lucide/settings-2'
 import LucideSearch from '~icons/lucide/search'
 import LucideLayoutGrid from '~icons/lucide/layout-grid'
 import LucideLock from '~icons/lucide/lock'
+import LucideCheck from '~icons/lucide/check'
+import LucideUnfoldVertical from '~icons/lucide/unfold-vertical'
+import LucideFoldVertical from '~icons/lucide/fold-vertical'
+import LucideMoreHorizontal from '~icons/lucide/more-horizontal'
 
 const showAddTeamDialog = ref(false)
 const showHomePageSettingsDialog = ref(false)
 const preferredHomePage = usePreferredHomePage()
 
+const spaceFilter = useLocalStorage<'all' | 'joined'>('gameplan:spaceFilter', 'joined')
+const isGroupOpen = useLocalStorage<{ [key: string]: boolean }>('gameplan:groupOpenState', {})
+
 const route = useRoute()
 const sessionUser = useSessionUser()
 
-const isGroupOpen = reactive<{ [key: string]: boolean }>({})
-
 let groupedSpaces = computed(() => {
   let _groups = useGroupedSpaces({
-    filterFn: (space) => !space.archived_at && joinedSpaces.data?.includes(space.name),
+    filterFn: (space) => {
+      const isNotArchived = !space.archived_at
+      if (spaceFilter.value === 'all') {
+        return isNotArchived
+      } else {
+        return isNotArchived && joinedSpaces.data?.includes(space.name)
+      }
+    },
   })
   for (let group of _groups.value) {
-    isGroupOpen[group.name] = true
+    if (isGroupOpen.value[group.name] === undefined) {
+      isGroupOpen.value[group.name] = true
+    }
   }
   return _groups.value
 })
+
+function setSpaceFilter(filter: 'all' | 'joined') {
+  spaceFilter.value = filter
+}
+
+const allGroupsExpanded = computed(() => {
+  if (groupedSpaces.value.length === 0) return true
+  return groupedSpaces.value.every((group) => isGroupOpen.value[group.name] === true)
+})
+
+function toggleAllGroups() {
+  const shouldExpand = !allGroupsExpanded.value
+  groupedSpaces.value.forEach((group) => {
+    isGroupOpen.value[group.name] = shouldExpand
+  })
+}
 
 const navigation = computed(() => {
   return [
@@ -245,4 +306,31 @@ const navigation = computed(() => {
 function testRoute(regex: RegExp) {
   return route.name ? regex.test(route.name.toString()) : false
 }
+
+// Show/hide buttons on hover
+
+const showButtons = ref(false)
+let hideTimeout: ReturnType<typeof setTimeout> | null = null
+
+function onMouseEnter() {
+  showButtons.value = true
+  if (hideTimeout) {
+    clearTimeout(hideTimeout)
+    hideTimeout = null
+  }
+}
+
+function onMouseLeave() {
+  if (showButtons.value) {
+    hideTimeout = setTimeout(() => {
+      showButtons.value = false
+    }, 2000)
+  }
+}
+
+onUnmounted(() => {
+  if (hideTimeout) {
+    clearTimeout(hideTimeout)
+  }
+})
 </script>
