@@ -39,13 +39,43 @@
         ]"
       />
       <div class="ml-2 shrink-0" v-if="page.doc">
-        <div v-if="isAutosaving" class="flex items-center space-x-1 text-base text-ink-gray-5 ml-2">
-          <LoadingIndicator class="size-3.5" />
-          <span> Autosaving... </span>
-        </div>
-        <span v-else class="hidden text-sm text-ink-gray-5 sm:block">
-          Updated {{ dayjsLocal(page.doc.modified).format('lll') }}
-        </span>
+        <DropdownMoreOptions
+          placement="right"
+          :options="[
+            {
+              label: 'Saved ' + relativeTimestamp(page.doc.modified),
+              onClick: () => save(),
+              loading: isAutosaving,
+              icon: LucideSave,
+            },
+            {
+              label: 'Delete',
+              icon: LucideTrash2,
+              onClick: () => {
+                createDialog({
+                  title: 'Delete Page',
+                  message: 'Are you sure you want to delete this page?',
+                  actions: [
+                    {
+                      label: 'Delete',
+                      loading: page.delete.loading,
+                      onClick: ({ close }) => {
+                        return page.delete.submit().then(() => {
+                          if (history.state.back == null) {
+                            router.push({ name: 'MyPages' })
+                          } else {
+                            router.back()
+                          }
+                          close()
+                        })
+                      },
+                    },
+                  ],
+                })
+              },
+            },
+          ]"
+        />
       </div>
     </header>
     <div class="mx-auto w-full max-w-4xl px-5">
@@ -90,7 +120,11 @@ import { useDoc } from 'frappe-ui/src/data-fetching'
 import { useSpace } from '@/data/spaces'
 import { GPPage } from '@/types/doctypes'
 import SpaceBreadcrumbs from '@/components/SpaceBreadcrumbs.vue'
-import { LoadingIndicator } from 'frappe-ui'
+import DropdownMoreOptions from '@/components/DropdownMoreOptions.vue'
+import { createDialog } from '@/utils/dialogs'
+import { relativeTimestamp } from '@/utils'
+import LucideSave from '~icons/lucide/save'
+import LucideTrash2 from '~icons/lucide/trash-2'
 
 const props = defineProps<{
   pageId: string
@@ -100,12 +134,14 @@ const props = defineProps<{
 
 const route = useRoute()
 const router = useRouter()
+const history = window.history
 
 const titleInput = useTemplateRef('titleInput')
 const textEditor = useTemplateRef('textEditor')
 
 const title = ref('')
 const content = ref('')
+const confirmDelete = ref(false)
 
 const page = useDoc<GPPage>({
   doctype: 'GP Page',
