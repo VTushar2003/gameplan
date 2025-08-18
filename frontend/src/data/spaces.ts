@@ -1,6 +1,7 @@
 import { computed, MaybeRefOrGetter, toValue } from 'vue'
-import { useCall, useList } from 'frappe-ui/src/data-fetching'
+import { useCall, useList, useDoctype } from 'frappe-ui/src/data-fetching'
 import { GPProject, GPMember } from '@/types/doctypes'
+import { createDialog } from '@/utils/dialogs'
 
 interface Member extends Pick<GPMember, 'user'> {}
 
@@ -77,4 +78,95 @@ export const unreadCount = useCall<{ [spaceId: number]: number }>({
 export function getSpaceUnreadCount(spaceId: string) {
   let spaceIdInt = parseInt(spaceId)
   return unreadCount.data?.[spaceIdInt] ?? 0
+}
+
+const spaceDoctype = useDoctype<GPProject>('GP Project')
+
+export function joinSpace(space: Space) {
+  return spaceDoctype.runDocMethod
+    .submit({
+      method: 'join',
+      name: space.name,
+    })
+    .then(() => {
+      joinedSpaces.reload()
+    })
+}
+
+export function joinSpaces(spaceIds: string[]) {
+  return spaceDoctype.runMethod
+    .submit({
+      method: 'join_spaces',
+      params: {
+        spaces: spaceIds,
+      },
+    })
+    .then(() => {
+      joinedSpaces.reload()
+    })
+}
+
+export function leaveSpace(space: Space) {
+  return spaceDoctype.runDocMethod
+    .submit({
+      method: 'leave',
+      name: space.name,
+    })
+    .then(() => {
+      joinedSpaces.reload()
+    })
+}
+
+export function leaveSpaces(spaceIds: string[]) {
+  return spaceDoctype.runMethod
+    .submit({
+      method: 'leave_spaces',
+      params: {
+        spaces: spaceIds,
+      },
+    })
+    .then(() => {
+      joinedSpaces.reload()
+    })
+}
+
+export function unarchiveSpace(space: Space) {
+  return spaceDoctype.runDocMethod.submit({
+    method: 'unarchive',
+    name: space.name,
+  })
+}
+
+export function markAllAsRead(spaceIds: string[], groupTitle: string) {
+  createDialog({
+    title: 'Mark all as read',
+    message: `Are you sure you want to mark all discussions in ${groupTitle} as read? This action cannot be undone.`,
+    actions: [
+      {
+        label: 'Mark all as read',
+        variant: 'solid',
+        onClick: ({ close }) => {
+          return spaceDoctype.runMethod
+            .submit({
+              method: 'mark_all_as_read',
+              params: {
+                spaces: spaceIds,
+              },
+            })
+            .then(() => {
+              close()
+              unreadCount.reload()
+            })
+        },
+      },
+    ],
+  })
+}
+
+export function isDocMethodLoading(docname: string, method: string) {
+  return spaceDoctype.runDocMethod.isLoading(docname, method)
+}
+
+export function isMethodLoading(method: string) {
+  return spaceDoctype.runMethod.isLoading(method)
 }

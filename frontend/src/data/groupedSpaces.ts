@@ -3,7 +3,7 @@ import { spaces, Space } from './spaces'
 import { teams, Team } from './teams'
 
 type FilterFunction = (project: Space) => boolean | undefined
-type GroupedSpaceItem = Team & { spaces: Space[] }
+export type GroupedSpaceItem = Team & { spaces: Space[] }
 type Options = { filterFn?: FilterFunction }
 
 export function useGroupedSpaces({ filterFn = (_p: Space) => true }: Options = {}): Ref<

@@ -97,7 +97,7 @@ let router = createRouter({
     {
       path: '/spaces',
       name: 'Spaces',
-      component: () => import('@/pages/SpaceList.vue'),
+      component: () => import('@/pages/Spaces/Spaces.vue'),
     },
     {
       name: 'Space',
