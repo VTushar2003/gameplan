@@ -28,17 +28,17 @@
             >
               <span class="text-ink-gray-5"> &nbsp;&middot; Edited </span>
             </Tooltip>
-            <span v-if="editableComment?.setValue.loading" class="italic text-ink-gray-5">
+            <span v-if="isUpdating" class="italic text-ink-gray-5">
               &nbsp;&middot; Sending...
             </span>
-            <div v-if="editableComment?.setValue.error">
+            <div v-if="updateError">
               &nbsp;&middot;
               <span class="text-ink-red-4"> Error</span>
             </div>
           </div>
         </div>
         <Dropdown
-          v-show="editableComment == null"
+          v-show="!isEditing"
           class="ml-auto"
           placement="right"
           :button="{
@@ -53,34 +53,34 @@
         <div
           :class="{
             'w-full rounded-lg border bg-surface-white p-4 focus-within:border-outline-gray-3':
-              editableComment,
+              isEditing,
           }"
-          @keydown.ctrl.enter.capture.stop="updateComment(comment)"
-          @keydown.meta.enter.capture.stop="updateComment(comment)"
+          @keydown.ctrl.enter.capture.stop="updateComment()"
+          @keydown.meta.enter.capture.stop="updateComment()"
         >
           <CommentEditor
             v-if="comment.deleted_at == null"
-            :value="editableComment?.doc.content || comment.content"
+            :value="isEditing ? draftContent : comment.content"
             @change="
-              (value) => {
-                if (editableComment) {
-                  editableComment.doc.content = value
+              (value: string) => {
+                if (isEditing) {
+                  draftContent = value
                 }
               }
             "
-            :editable="editableComment != null"
+            :editable="isEditing"
             :submitButtonProps="{
-              onClick: () => updateComment(comment),
-              loading: editableComment?.setValue.loading,
+              onClick: () => updateComment(),
+              loading: isUpdating,
             }"
             :discardButtonProps="{
-              onClick: () => setEditing(comment.name, false),
+              onClick: () => discardEdit(),
             }"
             @rich-quote="$emit('rich-quote', $event)"
             @rich-quote-click="$emit('rich-quote-click', $event)"
           />
           <span class="text-base italic text-ink-gray-5" v-else> This message is deleted </span>
-          <div class="mt-3" v-if="!comment.deleted_at && !editableComment && comment.reactions">
+          <div class="mt-3" v-if="!comment.deleted_at && !isEditing && comment.reactions">
             <Reactions
               doctype="GP Comment"
               :name="comment.name"
@@ -124,21 +124,43 @@ interface Props {
 
 const props = defineProps<Props>()
 const showRevisionsDialog = ref(false)
-const editableComment = ref<ReturnType<typeof props.comments.edit> | null>(null)
+const isEditing = ref(false)
+const draftContent = ref('')
+const isUpdating = ref(false)
+const updateError = ref(null)
 
-const setEditing = (name: string, value: boolean) => {
-  if (value) {
-    editableComment.value = props.comments.edit(name)
-  } else {
-    editableComment.value = null
-  }
+const startEditing = () => {
+  isEditing.value = true
+  draftContent.value = props.comment.content
 }
 
-const updateComment = (comment: GPComment) => {
-  editableComment.value?.update().then(() => {
-    setEditing(comment.name, false)
-    tags.reload()
-  })
+const discardEdit = () => {
+  isEditing.value = false
+  draftContent.value = ''
+  updateError.value = null
+}
+
+const updateComment = () => {
+  if (!draftContent.value.trim()) return
+
+  isUpdating.value = true
+  updateError.value = null
+
+  props.comments.setValue
+    .submit({
+      name: props.comment.name,
+      content: draftContent.value,
+    })
+    .then(() => {
+      discardEdit()
+      tags.reload()
+    })
+    .catch((error) => {
+      updateError.value = error
+    })
+    .finally(() => {
+      isUpdating.value = false
+    })
 }
 
 const copyLink = (comment: GPComment) => {
@@ -151,7 +173,7 @@ const dropdownOptions = computed(() => [
   {
     label: 'Edit',
     icon: 'edit',
-    onClick: () => setEditing(props.comment.name, true),
+    onClick: () => startEditing(),
     condition: () => !props.comment.deleted_at && !props.readOnlyMode,
   },
   {
