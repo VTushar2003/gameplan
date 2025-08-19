@@ -4,6 +4,7 @@
 import frappe
 from frappe.model.document import Document
 
+from gameplan.gameplan.doctype.gp_unread_record.gp_unread_record import GPUnreadRecord
 from gameplan.mixins.mentions import HasMentions
 from gameplan.mixins.reactions import HasReactions
 from gameplan.mixins.tags import HasTags
@@ -27,6 +28,12 @@ class GPComment(HasMentions, HasReactions, HasTags, Document):
 	def after_insert(self):
 		self.update_discussion_meta()
 		self.update_task_meta()
+		if self.reference_doctype == "GP Discussion":
+			GPUnreadRecord.create_unread_records_for_comment(self)
+
+	def on_trash(self):
+		if self.reference_doctype == "GP Discussion":
+			GPUnreadRecord.delete_unread_records_for_comment(self.name)
 
 	def after_delete(self):
 		self.update_discussion_meta()

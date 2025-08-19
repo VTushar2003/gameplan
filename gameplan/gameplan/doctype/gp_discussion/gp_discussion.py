@@ -6,6 +6,7 @@ from frappe.model.document import Document
 from frappe.utils import cstr
 
 from gameplan.gameplan.doctype.gp_notification.gp_notification import GPNotification
+from gameplan.gameplan.doctype.gp_unread_record.gp_unread_record import GPUnreadRecord
 from gameplan.mixins.activity import HasActivity
 from gameplan.mixins.mentions import HasMentions
 from gameplan.mixins.reactions import HasReactions
@@ -68,10 +69,12 @@ class GPDiscussion(HasActivity, HasMentions, HasReactions, HasTags, Document):
 
 	def after_insert(self):
 		self.update_discussions_count()
+		GPUnreadRecord.create_unread_records_for_discussion(self)
 
 	def on_trash(self):
 		self.remove_bookmark()
 		self.update_discussions_count()
+		GPUnreadRecord.delete_unread_records_for_discussion(self.name)
 
 	def validate(self):
 		self.content = remove_empty_trailing_paragraphs(self.content)
@@ -94,6 +97,10 @@ class GPDiscussion(HasActivity, HasMentions, HasReactions, HasTags, Document):
 		if frappe.flags.read_only:
 			return
 
+		# New system: Mark as read in GP Unread Record
+		GPUnreadRecord.mark_discussion_as_read_for_user(self.name, frappe.session.user)
+
+		# Keep old system for analytics/backward compatibility
 		values = {"user": frappe.session.user, "discussion": self.name}
 		existing = frappe.db.get_value("GP Discussion Visit", values)
 		if existing:

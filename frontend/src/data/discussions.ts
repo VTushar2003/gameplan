@@ -5,9 +5,8 @@ import { GPDiscussion } from '@/types/doctypes'
 
 export interface Discussion extends GPDiscussion {
   project_title: string
-  last_visit: string
   last_post_at: string
-  unread: boolean
+  unread: number
   last_comment_content?: string
   last_poll_title?: string
 }
@@ -26,12 +25,6 @@ export function useDiscussions(options: UseDiscussionOptions) {
     limit: options.limit || 50,
     orderBy: options.orderBy,
     immediate: options.immediate ?? true,
-    transform(data) {
-      return data.map((d) => ({
-        ...d,
-        unread: !d.last_visit || d.last_post_at > d.last_visit,
-      }))
-    },
   })
   return discussions
 }

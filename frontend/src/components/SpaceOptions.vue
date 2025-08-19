@@ -15,7 +15,8 @@ import ChangeSpaceCategoryDialog from './ChangeSpaceCategoryDialog.vue'
 import EditSpaceDialog from './EditSpaceDialog.vue'
 import ManageMembersDialog from './ManageMembersDialog.vue'
 import { createDialog } from '@/utils/dialogs'
-import { unreadCount, useSpace } from '@/data/spaces'
+import { useSpace } from '@/data/spaces'
+import { markSpaceAsRead } from '@/data/unreadCount'
 import { GPProject } from '@/types/doctypes'
 
 import LucideUserPlus from '~icons/lucide/user-plus'
@@ -62,15 +63,7 @@ const options = computed(() => [
             label: 'Mark all as read',
             variant: 'solid',
             onClick: ({ close }) => {
-              return spaces.runDocMethod
-                .submit({
-                  method: 'mark_all_as_read',
-                  name: props.spaceId,
-                })
-                .then(() => {
-                  close()
-                  unreadCount.reload()
-                })
+              return markSpaceAsRead(props.spaceId).then(close)
             },
           },
         ],

@@ -117,7 +117,7 @@ export interface GPNotification extends DocType {
   team?: string
 }
 
-// Last updated: 2025-05-22 13:12:36.398541
+// Last updated: 2025-08-19 14:57:24.818263
 export interface GPDiscussion extends DocType {
   /** Project: Link (GP Project) */
   project: string
@@ -134,7 +134,7 @@ export interface GPDiscussion extends DocType {
   /** Last Post At: Datetime */
   last_post_at?: string
   /** Comments Count: Int */
-  comments_count?: number
+  comments_count: number
   /** Last Post By: Link (User) */
   last_post_by?: string
   /** Closed At: Datetime */
