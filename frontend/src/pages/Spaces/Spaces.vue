@@ -2,7 +2,6 @@
   <PageHeader>
     <Breadcrumbs class="h-7" :items="[{ label: 'Spaces', route: { name: 'Spaces' } }]" />
     <Button
-      variant="solid"
       @click="
         () => {
           categoryForNewSpace = ''
