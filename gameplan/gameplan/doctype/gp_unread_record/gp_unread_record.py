@@ -14,11 +14,9 @@ class GPUnreadRecord(Document):
 
 		project_members = GPUnreadRecord._get_project_members(discussion_doc.project)
 
-		# Create unread records for all project members (discussion itself, comment=NULL)
 		records = []
 		for user in project_members:
 			if user == discussion_doc.owner:
-				# Don't create unread record for the discussion creator
 				continue
 
 			records.append(
@@ -50,11 +48,9 @@ class GPUnreadRecord(Document):
 		)
 		project_members = GPUnreadRecord._get_project_members(discussion_doc.project)
 
-		# Create unread records for all project members (for the comment)
 		records = []
 		for user in project_members:
 			if user == comment_doc.owner:
-				# Don't create unread record for the comment creator
 				continue
 
 			records.append(
@@ -131,53 +127,36 @@ class GPUnreadRecord(Document):
 		return query.run(as_dict=1)
 
 	@staticmethod
-	def get_unread_count_by_project(user):
-		"""Get unread count per project for user
-
-		Note: Multiple unread comments in a discussion are counted as 1 unread discussion
-		when grouped by project (using COUNT(DISTINCT discussion))
-		"""
-		from frappe.query_builder import functions
-
-		UnreadRecord = frappe.qb.DocType("GP Unread Record")
-
-		result = (
-			frappe.qb.from_(UnreadRecord)
-			.select(
-				UnreadRecord.project,
-				functions.Count(UnreadRecord.discussion).distinct().as_("unread_discussions_count"),
-			)
-			.where((UnreadRecord.user == user) & (UnreadRecord.is_unread == 1))
-			.groupby(UnreadRecord.project)
-			.run(as_dict=True)
-		)
-
-		return {row.project: row.unread_discussions_count for row in result}
-
-	@staticmethod
 	def get_unread_count_for_projects(user, projects: list[str] = None):
 		"""Get unread count for a single project for user"""
 		from frappe.query_builder import functions
 
 		UnreadRecord = frappe.qb.DocType("GP Unread Record")
+
+		if projects:
+			condition = (
+				(UnreadRecord.user == user)
+				& (UnreadRecord.project.isin(projects))
+				& (UnreadRecord.is_unread == 1)
+			)
+		else:
+			condition = (UnreadRecord.user == user) & (UnreadRecord.is_unread == 1)
+
 		result = (
 			frappe.qb.from_(UnreadRecord)
 			.select(
 				UnreadRecord.project,
 				functions.Count(UnreadRecord.discussion).distinct().as_("unread_discussions_count"),
 			)
-			.where(
-				(UnreadRecord.user == user)
-				& (UnreadRecord.project.isin(projects))
-				& (UnreadRecord.is_unread == 1)
-			)
+			.where(condition)
 			.groupby(UnreadRecord.project)
 			.run(as_dict=True)
 		)
 
 		out = {}
-		for project in projects:
-			out[project] = 0
+		if projects:
+			for project in projects:
+				out[project] = 0
 
 		for row in result:
 			out[row.project] = row.unread_discussions_count
@@ -185,35 +164,13 @@ class GPUnreadRecord(Document):
 		return out
 
 	@staticmethod
-	def get_unread_count_by_discussion(user, project):
-		"""Get unread count per discussion filteredy by project for user"""
-		filters = {"user": user, "is_unread": 1}
-		if project:
-			filters["project"] = project
-		result = frappe.qb.get_query(
-			"GP Unread Record",
-			filters=filters,
-			fields=["discussion", {"COUNT": "name", "as": "unread_count"}],
-			group_by="discussion",
-		).run(as_dict=True)
-
-		return {row.discussion: row.unread_count for row in result}
-
-	@staticmethod
-	def get_discussion_unread_count(user, discussion):
-		"""Get unread count for specific discussion for user"""
-		result = frappe.qb.get_query(
-			"GP Unread Record",
-			filters={"user": user, "discussion": discussion, "is_unread": 1},
-			fields=[{"COUNT": "name", "as": "unread_count"}],
-		).run(as_dict=True)
-
-		return result[0].unread_count if result else 0
-
-	@staticmethod
 	def _get_project_members(project_name):
 		"""Get all users who have access to the project"""
+		import gameplan
+
 		project = frappe.db.get_value("GP Project", project_name, ["name", "is_private"], as_dict=True)
+
+		all_users = set()
 
 		if project.is_private:
 			members = frappe.qb.get_query(
@@ -221,11 +178,25 @@ class GPUnreadRecord(Document):
 				fields=["user"],
 				filters={"parent": project.name, "parenttype": "GP Project"},
 			).run(pluck=True)
-			return members
+			all_users.update(members)
 		else:
-			return frappe.qb.get_query("GP User Profile", filters={"enabled": 1}, fields=["user"]).run(
-				pluck=True
-			)
+			enabled_users = frappe.qb.get_query(
+				"GP User Profile", filters={"enabled": 1}, fields=["user"]
+			).run(pluck=True)
+
+			for user in enabled_users:
+				if not gameplan.is_guest(user):
+					all_users.add(user)
+
+		# Include guest users with explicit project access
+		guest_users = frappe.qb.get_query(
+			"GP Guest Access",
+			fields=["user"],
+			filters={"project": project.name},
+		).run(pluck=True)
+		all_users.update(guest_users)
+
+		return list(all_users)
 
 	@staticmethod
 	def _bulk_create_unread_records(records):
@@ -250,3 +221,10 @@ def on_doctype_update():
 def add_indexes():
 	frappe.db.add_index("GP Unread Record", ["user", "discussion", "is_unread"], "user_discussion_unread")
 	frappe.db.add_index("GP Unread Record", ["user", "project", "is_unread"], "user_project_unread")
+
+
+@frappe.whitelist(methods=["GET", "POST"])
+def get_unread_count(projects: list[str] = None):
+	"""Get unread count for specific projects"""
+	user = frappe.session.user
+	return GPUnreadRecord.get_unread_count_for_projects(user, projects)

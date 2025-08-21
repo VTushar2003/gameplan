@@ -1,7 +1,8 @@
 # Copyright (c) 2025, Frappe Technologies Pvt. Ltd. and Contributors
 
 import frappe
-from frappe.model.document import bulk_insert
+
+from gameplan.gameplan.doctype.gp_unread_record.gp_unread_record import GPUnreadRecord
 
 
 class UnreadRecordsMigrator:
@@ -11,34 +12,35 @@ class UnreadRecordsMigrator:
 		self.discussion_project = {}
 		self.user_discussion_visits = {}
 		self.discussion_comments = {}
-		self.private_project_members = {}
 		self.user_project_visits = {}
 
 	def execute(self):
 		"""Main execution method for the migration."""
 		self._load_data()
-		gp_users = self._get_enabled_users()
 
-		for user in gp_users:
-			unread_records = self._generate_unread_records_for_user(user)
+		all_projects = frappe.get_all("GP Project", fields=["name"], pluck="name")
+		total_projects = len(all_projects)
+
+		for idx, project_name in enumerate(all_projects):
+			project_name_str = str(project_name)
+			project_members = GPUnreadRecord._get_project_members(project_name_str)
+			unread_records = []
+
+			for user in project_members:
+				user_records = self._generate_unread_records_for_user_in_project(user, project_name_str)
+				unread_records.extend(user_records)
+
 			if unread_records:
-				self._save_unread_records(user, unread_records)
+				GPUnreadRecord._bulk_create_unread_records(unread_records)
+
+			frappe.utils.update_progress_bar("Creating unread records", idx + 1, total_projects)
 
 	def _load_data(self):
 		"""Load all required data from database."""
 		self._load_discussion_visits()
 		self._load_discussions()
 		self._load_comments()
-		self._load_private_project_members()
 		self._load_project_visits()
-
-	def _get_enabled_users(self):
-		"""Get all enabled GP users."""
-		return frappe.qb.get_query(
-			"GP User Profile",
-			fields=["user"],
-			filters={"enabled": 1},
-		).run(pluck=True)
 
 	def _load_discussion_visits(self):
 		"""Load discussion visit records."""
@@ -71,16 +73,6 @@ class UnreadRecordsMigrator:
 		for comment in all_comments:
 			self.discussion_comments.setdefault(comment.discussion, []).append(comment)
 
-	def _load_private_project_members(self):
-		"""Load private project members for access control."""
-		private_projects = frappe.get_all("GP Project", fields=["name"], filters={"is_private": 1})
-
-		for project in private_projects:
-			members = frappe.get_all(
-				"GP Member", filters={"parent": project.name, "parenttype": "GP Project"}, pluck="user"
-			)
-			self.private_project_members[str(project.name)] = set(members)
-
 	def _load_project_visits(self):
 		"""Load project visit records."""
 		project_visits = frappe.qb.get_query(
@@ -93,20 +85,21 @@ class UnreadRecordsMigrator:
 			key = (visit.user, visit.project)
 			self.user_project_visits[key] = visit
 
-	def _generate_unread_records_for_user(self, user):
-		"""Generate unread records for a specific user."""
+	def _generate_unread_records_for_user_in_project(self, user, project_name):
+		"""Generate unread records for a specific user in a specific project."""
 		unread_records = []
 		discussion_counts = 0
 		comment_counts = 0
 
-		for discussion in self.all_discussions:
+		project_discussions = [d for d in self.all_discussions if d.project == project_name]
+
+		for discussion in project_discussions:
 			if not self._should_process_discussion(user, discussion):
 				continue
 
 			last_timestamp = self._get_last_read_timestamp(user, discussion)
 
 			if last_timestamp is None:
-				# No visit record - create unread records for discussion and all comments
 				discussion_record, comment_records = self._create_records_for_unvisited_discussion(
 					user, discussion
 				)
@@ -115,47 +108,29 @@ class UnreadRecordsMigrator:
 				discussion_counts += 1
 				comment_counts += len(comment_records)
 			else:
-				# Create unread records only for unread comments
 				comment_records = self._create_records_for_unread_comments(user, discussion, last_timestamp)
 				unread_records.extend(comment_records)
 				comment_counts += len(comment_records)
-
-		if unread_records:
-			print(f"Generated {len(unread_records)} unread records for user: {user}")
-			print(f"Discussion counts: {discussion_counts}, Comment counts: {comment_counts}")
 
 		return unread_records
 
 	def _should_process_discussion(self, user, discussion):
 		"""Check if discussion should be processed for the user."""
-		# Skip discussions owned by the user
-		if discussion.owner == user:
-			return False
-
-		# Check private project access
-		if discussion.project in self.private_project_members:
-			if user not in self.private_project_members[discussion.project]:
-				return False
-
-		return True
+		return discussion.owner != user
 
 	def _get_last_read_timestamp(self, user, discussion):
 		"""Get the last timestamp when the user read the discussion."""
-		# Check discussion visit
 		key = (user, str(discussion.name))
 		visit = self.user_discussion_visits.get(key)
 		last_visit_timestamp = visit.last_visit if visit else None
 
-		# Check project-level mark all as read
 		project_visit = self.user_project_visits.get((user, discussion.project))
 		if project_visit and project_visit.mark_all_read_at:
 			if discussion.creation <= project_visit.mark_all_read_at:
-				# Discussion was marked as read at project level
 				return discussion.creation
 
 		mark_all_as_read_timestamp = project_visit.mark_all_read_at if project_visit else None
 
-		# Return the latest timestamp
 		return (
 			max(last_visit_timestamp, mark_all_as_read_timestamp)
 			if last_visit_timestamp and mark_all_as_read_timestamp
@@ -172,7 +147,7 @@ class UnreadRecordsMigrator:
 		comments = self.discussion_comments.get(str(discussion.name), [])
 
 		for comment in comments:
-			if comment.owner != user:  # Skip comments owned by the user
+			if comment.owner != user:
 				comment_record = self._create_unread_record(
 					user=user,
 					discussion=discussion,
@@ -220,10 +195,6 @@ class UnreadRecordsMigrator:
 			record_data["comment"] = str(comment.name)
 
 		return frappe.get_doc(record_data)
-
-	def _save_unread_records(self, user, unread_records):
-		"""Save unread records to database."""
-		bulk_insert("GP Unread Record", unread_records, ignore_duplicates=True)
 
 
 def execute():
