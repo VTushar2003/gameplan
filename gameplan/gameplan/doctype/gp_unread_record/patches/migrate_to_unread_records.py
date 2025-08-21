@@ -198,6 +198,7 @@ class UnreadRecordsMigrator:
 
 
 def execute():
-	"""Entry point for the migration patch."""
+	"""Migrate existing discussion visits to unread records system."""
+
 	migrator = UnreadRecordsMigrator()
 	migrator.execute()
