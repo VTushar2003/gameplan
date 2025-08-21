@@ -235,6 +235,11 @@ item.customMethod.submit({ param: 'value' }) // call custom method
 - `./gameplan/gameplan/doctype/` contains individual doctype definitions
 - `./gameplan/api.py` contains some API endpoints and logic
 
+## Backend Development Guidelines
+
+- Always prefer `frappe.qb.get_query` instead of `frappe.db.get_all` or `frappe.get_all`
+- Always prefer `frappe.qb.get_query(..., ignore_permissions=False)` instead of `frappe.db.get_list` or `frappe.get_list` for queries that require permission checks
+
 ## Bench commands
 
 - Always run bench commands from the `frappe-bench` directory

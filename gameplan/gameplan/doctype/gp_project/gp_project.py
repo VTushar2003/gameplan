@@ -318,24 +318,3 @@ def get_unread_count():
 	unread_counts_dict = {row["project"]: row["unread_count"] for row in result}
 
 	return unread_counts_dict
-
-
-@frappe.whitelist()
-def get_unread_count_v2():
-	"""Get unread count per project using new system"""
-	user = frappe.session.user
-	return GPUnreadRecord.get_unread_count_by_project(user)
-
-
-@frappe.whitelist(methods=["GET", "POST"])
-def get_unread_count_for_projects(projects: list[str] = None):
-	"""Get unread count per project using new system"""
-	user = frappe.session.user
-	return GPUnreadRecord.get_unread_count_for_projects(user, projects)
-
-
-@frappe.whitelist()
-def get_unread_count_by_discussion(project=None):
-	"""Get unread count per discussion filtered by project"""
-	user = frappe.session.user
-	return GPUnreadRecord.get_unread_count_by_discussion(user, project)

@@ -245,7 +245,7 @@ const navigation = computed(() => {
       route: {
         name: 'Spaces',
       },
-      isActive: testRoute(/Spaces|Space/g),
+      isActive: testRoute(/Spaces/g),
       condition: () => preferredHomePage.value == 'Discussions',
     },
     {

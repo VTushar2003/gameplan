@@ -1,18 +1,29 @@
 import { useCall, useDoctype } from 'frappe-ui'
 import { GPProject } from '@/types/doctypes'
+import { reactive } from 'vue'
 
 interface ProjectUnreadCount {
   [spaceId: string]: number
 }
 
-const unreadCountByProject = useCall<ProjectUnreadCount>({
-  url: '/api/v2/method/GP Project/get_unread_count_v2',
-  immediate: true,
-  cacheKey: 'unreadCountByProject',
+const unreadCounts = reactive<ProjectUnreadCount>({})
+
+const unreadCountByProjects = useCall<ProjectUnreadCount, { projects?: string[] }>({
+  url: '/api/v2/method/GP Unread Record/get_unread_count',
+  method: 'POST',
+  immediate: false,
+  onSuccess(data) {
+    for (const [spaceId, count] of Object.entries(data)) {
+      unreadCounts[spaceId] = count
+    }
+  },
 })
 
+// load unread count for all projects once
+unreadCountByProjects.submit({})
+
 export function getProjectUnreadCount(spaceId: string) {
-  return unreadCountByProject.data?.[spaceId] ?? 0
+  return unreadCounts[spaceId] ?? 0
 }
 
 const Project = useDoctype<GPProject>('GP Project')
@@ -24,7 +35,7 @@ export function markSpaceAsRead(spaceId: string) {
       method: 'mark_all_as_read',
     })
     .then(() => {
-      return unreadCountByProject.reload()
+      return refreshUnreadCountForProjects([spaceId])
     })
 }
 
@@ -37,6 +48,10 @@ export function markSpacesAsRead(spaceIds: string[]) {
       },
     })
     .then(() => {
-      return unreadCountByProject.reload()
+      return refreshUnreadCountForProjects(spaceIds)
     })
+}
+
+export function refreshUnreadCountForProjects(projects: string[]) {
+  return unreadCountByProjects.submit({ projects })
 }

@@ -117,7 +117,7 @@ export interface GPNotification extends DocType {
   team?: string
 }
 
-// Last updated: 2025-08-19 14:57:24.818263
+// Last updated: 2025-08-19 23:59:43.143194
 export interface GPDiscussion extends DocType {
   /** Project: Link (GP Project) */
   project: string
