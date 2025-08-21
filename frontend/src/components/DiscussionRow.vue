@@ -18,12 +18,6 @@
       </div>
       <div class="min-w-0 flex-1">
         <div class="flex min-w-0 items-center">
-          <!-- <div
-            v-if="discussion.unread"
-            class="mr-1 size-4 text-xs grid place-content-center leading-none shrink-0 rounded-full bg-orange-500 text-white"
-          >
-            {{ discussion.unread }}
-          </div> -->
           <div
             class="overflow-hidden text-ellipsis whitespace-nowrap leading-none"
             :class="discussion.unread ? 'text-ink-gray-8' : 'text-ink-gray-8'"
@@ -81,22 +75,20 @@
           <Tooltip text="Ongoing poll" v-if="discussion.ongoing_polls?.length">
             <LucideBarChart2 class="h-4 w-4 -rotate-90" />
           </Tooltip>
-          <Tooltip v-if="discussion.unread" :text="`${discussion.comments_count} comments`">
+          <Tooltip v-if="discussion.unread">
             <div
-              class="bg-orange-500 text-white rounded-full size-4 grid place-content-center text-xs"
+              class="bg-amber-600 dark:bg-dark-amber-500 text-white rounded-full h-4 min-w-4 px-1 grid place-content-center text-xs"
             >
               {{ discussion.unread }}
             </div>
             <template #content>
-              <div v-if="discussion.comments_count > 0" class="p-0.5">
+              <div v-if="discussion.comments_count + 1 === discussion.unread">New unread post</div>
+              <div v-else-if="discussion.comments_count > 0" class="p-0.5">
                 <div>{{ discussion.unread }} unread</div>
                 <div class="text-ink-gray-3 mt-0.5">
                   {{ discussion.comments_count }}
                   {{ discussion.comments_count == 1 ? 'comment' : 'comments' }}
                 </div>
-              </div>
-              <div v-else>
-                <div class="text-ink-white">New post</div>
               </div>
             </template>
           </Tooltip>
