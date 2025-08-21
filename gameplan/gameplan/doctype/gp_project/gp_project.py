@@ -11,6 +11,7 @@ from pypika.terms import ExistsCriterion
 
 import gameplan
 from gameplan.api import invite_by_email
+from gameplan.gameplan.doctype.gp_unread_record.gp_unread_record import GPUnreadRecord
 from gameplan.gemoji import get_random_gemoji
 from gameplan.mixins.archivable import Archivable
 from gameplan.mixins.manage_members import ManageMembersMixin
@@ -81,6 +82,9 @@ class GPProject(ManageMembersMixin, Archivable, Document):
 		if not self.icon:
 			self.icon = get_random_gemoji().emoji
 		self.append("members", {"user": frappe.session.user})
+
+	def on_trash(self):
+		GPUnreadRecord.delete_unread_records_for_project(self.name)
 
 	def update_discussions_count(self):
 		total_discussions = frappe.db.count("GP Discussion", filters={"project": self.name})
@@ -182,6 +186,9 @@ class GPProject(ManageMembersMixin, Archivable, Document):
 		user = frappe.session.user
 		project_name = self.name
 		now = frappe.utils.now()
+
+		# new unread record system
+		GPUnreadRecord.mark_all_as_read_for_project(self.name, frappe.session.user)
 
 		project_visit_name = frappe.db.get_value("GP Project Visit", {"user": user, "project": project_name})
 		if project_visit_name:

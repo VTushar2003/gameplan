@@ -220,6 +220,7 @@ import { createDialog } from '@/utils/dialogs'
 import { useScrollPosition } from '@/utils/scrollContainer'
 import { isMobile } from '@/composables/isMobile'
 import { useRichQuoteHandler } from '@/components/RichQuoteExtension/useRichQuoteHandler'
+import { refreshUnreadCountForProjects } from '@/data/unreadCount'
 
 import LucideArrowUp from '~icons/lucide/arrow-up'
 
@@ -285,8 +286,10 @@ async function scrollToUnread() {
     }
   }
 
-  if (route.name === 'Discussion' && route.params.postId === doc.name) {
-    discussion.trackVisit.submit()
+  if (route.name === 'Discussion' && route.params.postId === doc?.name) {
+    discussion.trackVisit.submit().then(() => {
+      refreshUnreadCountForProjects([doc.project])
+    })
   }
 }
 

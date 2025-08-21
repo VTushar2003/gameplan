@@ -30,8 +30,8 @@ importers:
         specifier: ^4.28.0
         version: 4.29.2
       frappe-ui:
-        specifier: ^0.1.188
-        version: 0.1.188(@babel/parser@7.27.2)(@vue/compiler-sfc@3.5.13)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.13(typescript@5.8.3)))(vue-template-compiler@2.7.16)(vue@3.5.13(typescript@5.8.3))
+        specifier: ^0.1.190
+        version: 0.1.190(@babel/parser@7.27.2)(@vue/compiler-sfc@3.5.13)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.13(typescript@5.8.3)))(vue-template-compiler@2.7.16)(vue@3.5.13(typescript@5.8.3))
       fuzzysort:
         specifier: ^2.0.4
         version: 2.0.4
@@ -1470,8 +1470,8 @@ packages:
   fraction.js@4.3.7:
     resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
 
-  frappe-ui@0.1.188:
-    resolution: {integrity: sha512-5H0J6y96DSs3ddr47/QU9ptgVjcliu0rjLg6I/3IDEk0+4iUurmGa6l86eWxtjyClQ39Kxxaax6hr9Lj+eyfQA==}
+  frappe-ui@0.1.190:
+    resolution: {integrity: sha512-hPTincnBGp/ZL1uciRYg36nrbL8UkMwx40KP3to0mw+hIw33+3sYVIj5ipSjUjfId+pQ3wfmHr43pztUDrcdUA==}
     peerDependencies:
       vue: '>=3.5.0'
       vue-router: ^4.1.6
@@ -4104,7 +4104,7 @@ snapshots:
 
   fraction.js@4.3.7: {}
 
-  frappe-ui@0.1.188(@babel/parser@7.27.2)(@vue/compiler-sfc@3.5.13)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.13(typescript@5.8.3)))(vue-template-compiler@2.7.16)(vue@3.5.13(typescript@5.8.3)):
+  frappe-ui@0.1.190(@babel/parser@7.27.2)(@vue/compiler-sfc@3.5.13)(tailwindcss@3.4.17)(vue-router@4.5.1(vue@3.5.13(typescript@5.8.3)))(vue-template-compiler@2.7.16)(vue@3.5.13(typescript@5.8.3)):
     dependencies:
       '@floating-ui/vue': 1.1.6(vue@3.5.13(typescript@5.8.3))
       '@headlessui/vue': 1.7.23(vue@3.5.13(typescript@5.8.3))

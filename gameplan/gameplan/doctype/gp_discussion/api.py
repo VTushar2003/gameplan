@@ -3,6 +3,7 @@
 
 
 import frappe
+from frappe.query_builder.functions import Count
 from frappe.utils import cint
 from pypika.terms import ExistsCriterion
 
@@ -23,9 +24,10 @@ def get_discussions(filters=None, order_by=None, start=None, limit=None):
 	order_field, order_direction = order_by.split(" ", 1)
 
 	Discussion = frappe.qb.DocType("GP Discussion")
-	Visit = frappe.qb.DocType("GP Discussion Visit")
 	Project = frappe.qb.DocType("GP Project")
 	Member = frappe.qb.DocType("GP Member")
+	UnreadRecord = frappe.qb.DocType("GP Unread Record")
+
 	member_exists = (
 		frappe.qb.from_(Member)
 		.select(Member.name)
@@ -36,11 +38,9 @@ def get_discussions(filters=None, order_by=None, start=None, limit=None):
 	query = (
 		frappe.qb.get_query(
 			Discussion,
-			fields=[Discussion.star, Visit.last_visit, Project.title.as_("project_title")],
+			fields=[Discussion.star, Project.title.as_("project_title")],
 			filters=filters,
 		)
-		.left_join(Visit)
-		.on((Discussion.name == Visit.discussion) & (Visit.user == frappe.session.user))
 		.left_join(Project)
 		.on(Discussion.project == Project.name)
 		.where((Project.is_private == 0) | ((Project.is_private == 1) & ExistsCriterion(member_exists)))
@@ -55,7 +55,16 @@ def get_discussions(filters=None, order_by=None, start=None, limit=None):
 		query = query.where(clause_discussions_bookmarked_by_user(frappe.session.user))
 
 	if feed_type == "unread":
-		query = query.where((Visit.last_visit < Discussion.last_post_at) | (Visit.last_visit.isnull()))
+		unread_record_exists = (
+			frappe.qb.from_(UnreadRecord)
+			.select(UnreadRecord.name)
+			.where(
+				(UnreadRecord.user == frappe.session.user)
+				& (UnreadRecord.discussion == Discussion.name)
+				& (UnreadRecord.is_unread == 1)
+			)
+		)
+		query = query.where(ExistsCriterion(unread_record_exists))
 
 	if feed_type == "following":
 		query = query.where(ExistsCriterion(member_exists))
@@ -79,10 +88,41 @@ def get_discussions(filters=None, order_by=None, start=None, limit=None):
 	has_next_page = len(discussions) > limit
 	discussions = discussions[:limit]
 
+	discussions = include_unread_counts(discussions)
 	discussions = include_ongoing_polls(discussions)
 	discussions = include_last_post_content(discussions)
 
 	frappe.response["has_next_page"] = has_next_page
+	return discussions
+
+
+def include_unread_counts(discussions):
+	"""Add unread counts to discussions with a single query"""
+	if not discussions:
+		return discussions
+
+	discussion_names = [d.name for d in discussions]
+	UnreadRecord = frappe.qb.DocType("GP Unread Record")
+
+	# Get unread counts for all discussions in one query
+	unread_counts = (
+		frappe.qb.from_(UnreadRecord)
+		.select(UnreadRecord.discussion, Count(UnreadRecord.name).as_("unread_count"))
+		.where(
+			(UnreadRecord.user == frappe.session.user)
+			& (UnreadRecord.discussion.isin(discussion_names))
+			& (UnreadRecord.is_unread == 1)
+		)
+		.groupby(UnreadRecord.discussion)
+		.run(as_dict=1)
+	)
+
+	unread_map = {str(row.discussion): row.unread_count for row in unread_counts}
+
+	# Add unread counts to discussions
+	for discussion in discussions:
+		discussion["unread"] = unread_map.get(str(discussion.name), 0)
+
 	return discussions
 
 

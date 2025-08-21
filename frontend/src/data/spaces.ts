@@ -2,6 +2,7 @@ import { computed, MaybeRefOrGetter, toValue } from 'vue'
 import { useCall, useList, useDoctype } from 'frappe-ui/src/data-fetching'
 import { GPProject, GPMember } from '@/types/doctypes'
 import { createDialog } from '@/utils/dialogs'
+import { getProjectUnreadCount, markSpacesAsRead } from './unreadCount'
 
 interface Member extends Pick<GPMember, 'user'> {}
 
@@ -46,9 +47,6 @@ export let spaces = useList<Space>({
     return data
   },
   immediate: true,
-  onSuccess() {
-    unreadCount.submit()
-  },
 })
 
 export function useSpace(name: MaybeRefOrGetter<string | undefined>) {
@@ -69,15 +67,8 @@ export function hasJoined(spaceId: MaybeRefOrGetter<string>) {
   return joinedSpaces.data?.includes(toValue(spaceId))
 }
 
-export const unreadCount = useCall<{ [spaceId: number]: number }>({
-  url: '/api/v2/method/GP Project/get_unread_count',
-  immediate: false,
-  cacheKey: 'unreadCount',
-})
-
 export function getSpaceUnreadCount(spaceId: string) {
-  let spaceIdInt = parseInt(spaceId)
-  return unreadCount.data?.[spaceIdInt] ?? 0
+  return getProjectUnreadCount(spaceId)
 }
 
 const spaceDoctype = useDoctype<GPProject>('GP Project')
@@ -146,17 +137,7 @@ export function markAllAsRead(spaceIds: string[], groupTitle: string) {
         label: 'Mark all as read',
         variant: 'solid',
         onClick: ({ close }) => {
-          return spaceDoctype.runMethod
-            .submit({
-              method: 'mark_all_as_read',
-              params: {
-                spaces: spaceIds,
-              },
-            })
-            .then(() => {
-              close()
-              unreadCount.reload()
-            })
+          return markSpacesAsRead(spaceIds).then(close)
         },
       },
     ],

@@ -3,10 +3,13 @@ import frappe
 __version__ = "0.0.1"
 
 
-def is_guest():
-	if frappe.session.user == "Administrator":
+def is_guest(user=None):
+	if not user:
+		user = frappe.session.user
+
+	if user == "Administrator":
 		return False
-	roles = frappe.get_roles()
+	roles = frappe.get_roles(user)
 	if "Gameplan Member" in roles or "Gameplan Admin" in roles:
 		return False
 	return "Gameplan Guest" in roles
