@@ -191,6 +191,7 @@ import LucideCheck from '~icons/lucide/check'
 import LucideUnfoldVertical from '~icons/lucide/unfold-vertical'
 import LucideFoldVertical from '~icons/lucide/fold-vertical'
 import LucideMoreHorizontal from '~icons/lucide/more-horizontal'
+import LucideGamepad2 from '~icons/lucide/gamepad-2'
 
 const showAddTeamDialog = ref(false)
 const showHomePageSettingsDialog = ref(false)
@@ -257,6 +258,14 @@ const navigation = computed(() => {
       },
       isActive: testRoute(/Discussions/g),
       condition: () => preferredHomePage.value == 'Spaces',
+    },
+    {
+      name: 'My Pod',
+      icon: LucideGamepad2,
+      route: {
+        name: 'MyPod',
+      },
+      isActive: testRoute(/MyPod/g),
     },
     {
       name: 'Inbox',
