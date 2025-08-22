@@ -24,7 +24,7 @@
           >
             <span
               class="overflow-hidden text-ellipsis whitespace-nowrap text-base"
-              :class="[discussion.unread ? 'font-semibold' : 'font-medium']"
+              :class="[discussion.unread ? 'font-semibold' : '']"
             >
               {{ discussion.title }}
             </span>
